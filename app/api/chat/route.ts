@@ -82,16 +82,31 @@ export async function POST(req: Request) {
       ? messages 
       : [{ role: "user", content: explicitPrompt ?? "" }];
     
-    // If request carries DOM inspector extract JSON attachments, include them as extra user context
+    // Check if DOM JSON attachments are being sent with this request
+    // Only inject them into system context if they're new (not already in conversation history)
     let msgsWithAttachment: Message[] = msgs;
+    let attachmentSystemContext = '';
     if (attachments && attachments.length > 0) {
       const domJsons = attachments.filter(a => a.domInspExtractData && typeof a.content === 'string' && a.content.length > 0);
       if (domJsons.length > 0) {
-        const combined = domJsons.map(a => `Attachment: ${a.name}\n${a.content}`).join('\n\n');
-        msgsWithAttachment = [
-          ...msgs,
-          { role: "user", content: `Attached DOM extraction data provided by the user. Use this as context for generating test code.\n\n${combined}` }
-        ];
+        // Check if DOM attachment data is already in the conversation history
+        const hasExistingAttachment = msgs.some(msg => 
+          msg.role === "user" && msg.content && msg.content.includes("--- ATTACHED DOM EXTRACTION DATA ---")
+        );
+        
+        if (!hasExistingAttachment) {
+          const combined = domJsons
+            .map(a => `Attachment: ${a.name}\n\n\x60\x60\x60json\n${a.content}\n\x60\x60\x60`)
+            .join('\n\n');
+          
+          // Add attachment as the first user message if it doesn't exist
+          const attachmentMessage: Message = {
+            role: "user",
+            content: `--- ATTACHED DOM EXTRACTION DATA ---\nDOM extraction data provided by the user. This data persists throughout our conversation - always refer to this exact data when answering questions about the JSON, elements, XPaths, or any related content:\n\n${combined}\n--- END ATTACHMENT DATA ---`
+          };
+          
+          msgsWithAttachment = [attachmentMessage, ...msgs];
+        }
       }
     }
     

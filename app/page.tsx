@@ -497,6 +497,9 @@ export default function Home() {
   const [selectedTools, setSelectedTools] = React.useState<string[]>([]);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
+  const [isAttachmentModalOpen, setIsAttachmentModalOpen] = React.useState(false);
+  const [attachmentPreviewContent, setAttachmentPreviewContent] = React.useState<string | null>(null);
+  const [attachmentPreviewName, setAttachmentPreviewName] = React.useState<string | null>(null);
 
   const modelOptions = React.useMemo(
     () => [
@@ -639,6 +642,35 @@ export default function Home() {
       results.push(base);
     }
     return results;
+  }
+
+  async function openAttachmentPreview(file: File) {
+    try {
+      const name = file.name;
+      const type = file.type || "";
+      let content = "";
+      if (type.startsWith("text/") || type === "application/json" || name.toLowerCase().endsWith(".json")) {
+        const raw = await file.text();
+        try {
+          if (type === "application/json" || name.toLowerCase().endsWith(".json")) {
+            content = JSON.stringify(JSON.parse(raw), null, 2);
+          } else {
+            content = raw;
+          }
+        } catch {
+          content = raw;
+        }
+      } else {
+        content = "Preview not available for this file type.";
+      }
+      setAttachmentPreviewName(name);
+      setAttachmentPreviewContent(content);
+      setIsAttachmentModalOpen(true);
+    } catch {
+      setAttachmentPreviewName(file.name);
+      setAttachmentPreviewContent("Failed to read file for preview.");
+      setIsAttachmentModalOpen(true);
+    }
   }
 
   async function sendMessage(text: string, retryFromMessage?: ChatMessage) {
@@ -1212,12 +1244,19 @@ export default function Home() {
                   {attachments.length > 0 && (
                     <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-rose-900/90">
                       {attachments.map((file, idx) => (
-                        <span key={`${file.name}-${idx}`} className="inline-flex items-center gap-1 rounded-full border border-rose-200/60 bg-white/70 px-2.5 py-1">
+                        <span
+                          key={`${file.name}-${idx}`}
+                          role="button"
+                          tabIndex={0}
+                          title="Click to preview"
+                          onClick={() => openAttachmentPreview(file)}
+                          className="inline-flex items-center gap-1 rounded-full border border-rose-200/60 bg-white/70 px-2.5 py-1 cursor-pointer hover:bg-white"
+                        >
                           {file.name}
                           <button
                             aria-label="Remove attachment"
                             className="ml-1 text-rose-500 hover:text-rose-700"
-                            onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}
+                            onClick={(e) => { e.stopPropagation(); setAttachments((prev) => prev.filter((_, i) => i !== idx)); }}
                           >
                             ×
                           </button>
@@ -1243,9 +1282,13 @@ export default function Home() {
               <h2 className="text-xl font-semibold text-gray-900">Select Tools</h2>
               <button
                 onClick={() => setIsToolsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 text-2xl"
+                className="text-gray-500 hover:text-gray-700 h-8 w-8 grid place-items-center rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 leading-none shrink-0"
+                aria-label="Close"
               >
-                ×
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
             <div className="p-6 overflow-y-auto max-h-[60vh]">
@@ -1263,9 +1306,47 @@ export default function Home() {
               </button>
               <button
                 onClick={() => setIsToolsModalOpen(false)}
-                className="px-6 py-2 bg-[#aa4673] text-white rounded-lg hover:bg-[#aa4673]/90 transition"
+                className="inline-flex items-center justify-center px-6 py-2 bg-[#aa4673] text-white rounded-lg hover:bg-[#aa4673]/90 transition leading-none"
               >
                 Done ({selectedTools.length} selected)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Attachment Preview Modal */}
+      {isAttachmentModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900 truncate">{attachmentPreviewName || 'Attachment Preview'}</h2>
+              <button
+                onClick={() => setIsAttachmentModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 h-8 w-8 grid place-items-center rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 leading-none shrink-0"
+                aria-label="Close preview"
+              >
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[70vh]">
+              {attachmentPreviewContent ? (
+                <pre className="whitespace-pre-wrap break-words text-sm font-mono text-[#432A78] bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  {attachmentPreviewContent}
+                </pre>
+              ) : (
+                <div className="text-gray-500 text-sm">No preview available.</div>
+              )}
+            </div>
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+              <button
+                onClick={() => setIsAttachmentModalOpen(false)}
+                className="inline-flex items-center justify-center px-6 py-2 bg-[#aa4673] text-white rounded-lg hover:bg-[#aa4673]/90 transition leading-none"
+              >
+                Close
               </button>
             </div>
           </div>
