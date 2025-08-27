@@ -9,6 +9,7 @@ import { google } from "@ai-sdk/google";
 import { groq } from "@ai-sdk/groq";
 import { Composio } from "@composio/core";
 import { VercelProvider } from "@composio/vercel";
+import { assistantPrompt } from "@/app/prompt";
 
 type Role = "user" | "assistant" | "system";
 
@@ -16,8 +17,6 @@ interface Message {
   role: Role;
   content: string;
 }
-
-
 
 function streamFromString(text: string, delayMs = 10): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
@@ -74,7 +73,10 @@ export async function POST(req: Request) {
       tools?: string[];
     } = await req.json();
     
-    
+    // Prepare base system prompt with current datetime
+    const nowISO = new Date().toISOString();
+    const baseSystemPrompt = assistantPrompt.replace(/\{\{currentDateTime\}\}/g, nowISO);
+
     const msgs: Message[] = messages && messages.length > 0 
       ? messages 
       : [{ role: "user", content: explicitPrompt ?? "" }];
@@ -104,20 +106,27 @@ export async function POST(req: Request) {
         }
       }
       
+      // Compose system prompt (append tool guidance when tools are enabled)
+      const toolGuidance = "You are a helpful assistant. When using tools, always provide a clear response based on the tool results. After executing any tool, explain what you found or accomplished.";
+      let systemPrompt = baseSystemPrompt;
+      
       const streamTextOptions: any = {
-        model, 
+        model,
         messages: msgs.map(m => ({ role: m.role, content: m.content })),
         maxSteps: 10,
-        experimental_continueSteps: true
+        experimental_continueSteps: true,
+        system: systemPrompt,
       };
       
       // Only add tools if we have any
       if (Object.keys(composioTools).length > 0) {
+        // Update system prompt to include tool guidance
+        systemPrompt = `${baseSystemPrompt}\n\n${toolGuidance}`;
+        streamTextOptions.system = systemPrompt;
+        
         streamTextOptions.tools = composioTools;
         streamTextOptions.maxToolRoundtrips = 3;
         streamTextOptions.toolChoice = "auto"; // Allow model to choose when to use tools
-        // Add system message to ensure proper tool usage
-        streamTextOptions.system = "You are a helpful assistant. When using tools, always provide a clear response based on the tool results. After executing any tool, explain what you found or accomplished.";
       }
       
       
@@ -183,7 +192,7 @@ export async function POST(req: Request) {
                 const responseResult = streamText({
                   model,
                   messages: messagesWithResults,
-                  system: "You are a helpful assistant. Provide a clear, helpful response based on the tool results provided. Summarize and interpret the results for the user."
+                  system: systemPrompt,
                 });
                 
                 // Stream the AI response
