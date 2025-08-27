@@ -66,11 +66,12 @@ function resolveModel(selected?: string) {
 
 export async function POST(req: Request) {
   try {
-    const { messages, prompt: explicitPrompt, model: selectedModel, tools: selectedTools }: { 
+    const { messages, prompt: explicitPrompt, model: selectedModel, tools: selectedTools, attachments }: { 
       messages?: Message[]; 
       prompt?: string; 
       model?: string; 
       tools?: string[];
+      attachments?: Array<{ name: string; size: number; type: string; content?: string; domInspExtractData?: boolean }>;
     } = await req.json();
     
     // Prepare base system prompt with current datetime
@@ -80,6 +81,19 @@ export async function POST(req: Request) {
     const msgs: Message[] = messages && messages.length > 0 
       ? messages 
       : [{ role: "user", content: explicitPrompt ?? "" }];
+    
+    // If request carries DOM inspector extract JSON attachments, include them as extra user context
+    let msgsWithAttachment: Message[] = msgs;
+    if (attachments && attachments.length > 0) {
+      const domJsons = attachments.filter(a => a.domInspExtractData && typeof a.content === 'string' && a.content.length > 0);
+      if (domJsons.length > 0) {
+        const combined = domJsons.map(a => `Attachment: ${a.name}\n${a.content}`).join('\n\n');
+        msgsWithAttachment = [
+          ...msgs,
+          { role: "user", content: `Attached DOM extraction data provided by the user. Use this as context for generating test code.\n\n${combined}` }
+        ];
+      }
+    }
     
     
     try {
@@ -112,7 +126,7 @@ export async function POST(req: Request) {
       
       const streamTextOptions: any = {
         model,
-        messages: msgs.map(m => ({ role: m.role, content: m.content })),
+        messages: msgsWithAttachment.map(m => ({ role: m.role, content: m.content })),
         maxSteps: 10,
         experimental_continueSteps: true,
         system: systemPrompt,
@@ -181,7 +195,7 @@ export async function POST(req: Request) {
                 
                 // Create new messages array with tool results
                 const messagesWithResults = [
-                  ...msgs.map(m => ({ role: m.role, content: m.content })),
+                  ...msgsWithAttachment.map(m => ({ role: m.role, content: m.content })),
                   {
                     role: "user" as const,
                     content: `Based on the following tool results, please provide a helpful response:\n\n${toolResults.map(tr => `Tool: ${tr.toolName}\nResult: ${JSON.stringify(tr.result, null, 2)}`).join('\n\n')}`

@@ -608,6 +608,39 @@ export default function Home() {
   const activeThread = threads.find((t) => t.id === activeThreadId) ?? threads[0];
   const showWelcome = (activeThread?.messages.length ?? 0) === 0 && input.trim().length === 0;
 
+  // Prepare attachments payload for API: include JSON content only when it's the special DOM extract JSON
+  async function prepareAttachmentsPayload(files: File[]) {
+    const results: Array<{ name: string; size: number; type: string; content?: string; domInspExtractData?: boolean }> = [];
+    for (const f of files) {
+      const base = { name: f.name, size: f.size, type: f.type };
+      if (f.type === 'application/json' || f.name.toLowerCase().endsWith('.json')) {
+        try {
+          const text = await f.text();
+          try {
+            const parsed = JSON.parse(text);
+            const isDom = parsed && parsed.dom_insp_extr_data_json === true;
+            if (isDom) {
+              // Minify JSON to reduce tokens
+              const min = JSON.stringify(parsed);
+              results.push({ ...base, content: min, domInspExtractData: true });
+              continue;
+            }
+          } catch {}
+          // Non-matching JSON: include only metadata
+          results.push(base);
+          continue;
+        } catch {
+          // If reading fails, include only metadata
+          results.push(base);
+          continue;
+        }
+      }
+      // Non-JSON file: include only metadata
+      results.push(base);
+    }
+    return results;
+  }
+
   async function sendMessage(text: string, retryFromMessage?: ChatMessage) {
     if (!text.trim()) return;
     
@@ -641,12 +674,14 @@ export default function Home() {
     setFirstTokenTime(null);
 
     try {
+      // Build attachments payload (may include JSON content for DOM inspector extracts)
+      const attachmentsPayload = await prepareAttachmentsPayload(attachments);
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           model: selectedModel,
-          attachments: attachments.map((f) => ({ name: f.name, size: f.size, type: f.type })),
+          attachments: attachmentsPayload,
           messages: [...targetMessages, userMsg],
           tools: selectedTools,
         }),
@@ -1082,6 +1117,22 @@ export default function Home() {
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
                         sendMessage(input);
+                      }
+                    }}
+                    onPaste={(e) => {
+                      try {
+                        const text = e.clipboardData?.getData('text') || '';
+                        if (!text) return;
+                        const obj = JSON.parse(text);
+                        if (obj && obj.dom_insp_extr_data_json === true) {
+                          // Intercept paste and turn into attachment
+                          e.preventDefault();
+                          const filename = `dom_extract_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+                          const file = new File([JSON.stringify(obj)], filename, { type: 'application/json' });
+                          setAttachments((prev) => [...prev, file]);
+                        }
+                      } catch {
+                        // Not JSON; fall through to normal paste
                       }
                     }}
                     placeholder="Type your message here..."
