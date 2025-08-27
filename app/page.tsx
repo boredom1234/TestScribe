@@ -2,16 +2,11 @@
 
 import React from "react";
 import ReactMarkdown from 'react-markdown';
+import { Sidebar } from './components/sidebar/Sidebar';
+import { MobileSidebar } from './components/sidebar/MobileSidebar';
+import { Thread as ChatThread } from './components/sidebar/ChatThread';
+import { IconPlus, IconHamburger } from './components/ui/icons';
 
-function IconHamburger() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <line x1="3" y1="6" x2="21" y2="6"></line>
-      <line x1="3" y1="12" x2="21" y2="12"></line>
-      <line x1="3" y1="18" x2="21" y2="18"></line>
-    </svg>
-  );
-}
 
 function IconGlobe() {
   return (
@@ -85,14 +80,6 @@ function IconPaperclip() {
   );
 }
 
-function IconPlus() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M12 5v14" />
-      <path d="M5 12h14" />
-    </svg>
-  );
-}
 
 function IconTools() {
   return (
@@ -488,6 +475,7 @@ export default function Home() {
   const STORAGE_THREADS = "t3chat:threads";
   const STORAGE_ACTIVE = "t3chat:activeThreadId";
   const STORAGE_MODEL = "t3chat:selectedModel";
+  const STORAGE_SIDEBAR = "t3chat:sidebarCollapsed";
 
   const [threads, setThreads] = React.useState<Thread[]>([{ id: crypto.randomUUID(), title: "Greeting Title", messages: [] }]);
   const [activeThreadId, setActiveThreadId] = React.useState<string>("");
@@ -507,6 +495,8 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = React.useState<Category>("create");
   const [isToolsModalOpen, setIsToolsModalOpen] = React.useState(false);
   const [selectedTools, setSelectedTools] = React.useState<string[]>([]);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
 
   const modelOptions = React.useMemo(
     () => [
@@ -564,6 +554,8 @@ export default function Home() {
       if (savedActive) setActiveThreadId(savedActive);
       const savedModel = localStorage.getItem(STORAGE_MODEL);
       if (savedModel) setSelectedModel(savedModel);
+      const savedSidebar = localStorage.getItem(STORAGE_SIDEBAR);
+      if (savedSidebar) setIsSidebarCollapsed(JSON.parse(savedSidebar));
     } catch {}
   }, []);
 
@@ -585,6 +577,12 @@ export default function Home() {
       localStorage.setItem(STORAGE_MODEL, selectedModel);
     } catch {}
   }, [selectedModel]);
+
+  React.useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_SIDEBAR, JSON.stringify(isSidebarCollapsed));
+    } catch {}
+  }, [isSidebarCollapsed]);
 
   // Ensure we always have a valid active thread id after hydration
   React.useEffect(() => {
@@ -827,6 +825,37 @@ export default function Home() {
     setInput("");
   }
 
+  function handleDeleteThread(threadId: string) {
+    setThreads((prev) => {
+      const filtered = prev.filter(t => t.id !== threadId);
+      // If we deleted the active thread, switch to the first remaining thread
+      if (threadId === activeThreadId && filtered.length > 0) {
+        setActiveThreadId(filtered[0].id);
+      } else if (filtered.length === 0) {
+        // If no threads left, create a new one
+        const newId = crypto.randomUUID();
+        const newThread: Thread = { id: newId, title: "New Chat", messages: [] };
+        setActiveThreadId(newId);
+        return [newThread];
+      }
+      return filtered;
+    });
+  }
+
+  function handleRenameThread(threadId: string, newTitle: string) {
+    setThreads((prev) => prev.map(t => 
+      t.id === threadId ? { ...t, title: newTitle } : t
+    ));
+  }
+
+  function handleToggleSidebar() {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  }
+
+  function handleToggleMobileSidebar() {
+    setIsMobileSidebarOpen(!isMobileSidebarOpen);
+  }
+
   function onSuggestionClick(prompt: string) {
     setInput(prompt);
     // optionally send immediately
@@ -866,17 +895,41 @@ export default function Home() {
 
   return (
     <div className="font-sans min-h-screen w-full bg-[#fdf7fd]">
-      {/* Top-left toolbar with only + for New Chat */}
-      <div className="fixed left-3 top-3 z-50">
+      {/* Sidebar */}
+      <Sidebar
+        threads={threads}
+        activeThreadId={activeThreadId}
+        onSelectThread={setActiveThreadId}
+        onCreateThread={startNewChat}
+        onDeleteThread={handleDeleteThread}
+        onRenameThread={handleRenameThread}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={handleToggleSidebar}
+      />
+
+      {/* Mobile Sidebar */}
+      <MobileSidebar
+        threads={threads}
+        activeThreadId={activeThreadId}
+        onSelectThread={setActiveThreadId}
+        onCreateThread={startNewChat}
+        onDeleteThread={handleDeleteThread}
+        onRenameThread={handleRenameThread}
+        isOpen={isMobileSidebarOpen}
+        onClose={() => setIsMobileSidebarOpen(false)}
+      />
+
+      {/* Mobile sidebar toggle */}
+      <div className="fixed left-3 top-3 z-50 md:hidden">
         <button
-          aria-label="New chat"
-          onClick={startNewChat}
+          aria-label="Open sidebar"
+          onClick={handleToggleMobileSidebar}
           className="grid h-9 w-9 place-items-center rounded-lg bg-[#f5dbef] text-[#ca0277] shadow-sm hover:brightness-95"
         >
-          <IconPlus />
+          <IconHamburger />
         </button>
       </div>
-      <div className="mx-auto flex gap-6 p-4 sm:p-6 lg:py-8 justify-center">
+      <div className={"mx-auto flex gap-6 p-4 sm:p-6 lg:py-8 justify-center transition-all duration-300"}>
         
 <div className="w-full space-y-6 px-2 pt-8 duration-300 animate-in fade-in-50 zoom-in-90 sm:px-8 pt-18">
           {showWelcome && (
