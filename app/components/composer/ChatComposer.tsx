@@ -38,6 +38,18 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
   const [isFormatting, setIsFormatting] = React.useState(false);
 
+  // Auto-resize textarea up to a max height, then enable vertical scrolling
+  const MAX_TEXTAREA_HEIGHT = 240; // px
+  React.useEffect(() => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    // Reset height to measure scrollHeight correctly, then clamp to max
+    ta.style.height = 'auto';
+    const newHeight = Math.min(ta.scrollHeight, MAX_TEXTAREA_HEIGHT);
+    ta.style.height = `${newHeight}px`;
+    ta.style.overflowY = ta.scrollHeight > MAX_TEXTAREA_HEIGHT ? 'auto' : 'hidden';
+  }, [input]);
+
   const setSelectionSafely = (start: number, end: number) => {
     const ta = textareaRef.current;
     if (!ta) return;
@@ -188,7 +200,7 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
               onPaste={handlePaste}
               ref={textareaRef}
               placeholder="Type your message here..."
-              className="h-[68px] w-full resize-none rounded-l-2xl border border-transparent bg-[#FBF7FB] px-4 py-3 text-[#432A78] placeholder-[#6F4DA3] outline-none"
+              className="min-h-[68px] max-h-[240px] w-full resize-none rounded-l-2xl border border-transparent bg-[#FBF7FB] px-4 py-3 text-[#432A78] placeholder-[#6F4DA3] outline-none overflow-y-auto"
             />
             <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-rose-700">
               <ModelSelector 
@@ -219,10 +231,29 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
             <button
               aria-label="Improve prompt"
               onClick={handleImprovePrompt}
-              className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-b from-rose-800 to-pink-800 text-white shadow-md transition hover:from-rose-600 hover:to-pink-600"
-              title="Improve prompt formatting"
+              disabled={isFormatting}
+              aria-busy={isFormatting}
+              className={`grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-b from-rose-800 to-pink-800 text-white shadow-md transition ${
+                isFormatting ? 'opacity-70 cursor-not-allowed' : 'hover:from-rose-600 hover:to-pink-600'
+              }`}
+              title={isFormatting ? 'Formatting…' : 'Improve prompt formatting'}
             >
-              <IconPlusSparkles />
+              {isFormatting ? (
+                // Spinner icon
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="12" cy="12" r="9" strokeOpacity="0.25" />
+                  <path d="M21 12a9 9 0 0 0-9-9" strokeOpacity="0.9" />
+                </svg>
+              ) : (
+                <IconPlusSparkles />
+              )}
             </button>
           )}
           <button 
