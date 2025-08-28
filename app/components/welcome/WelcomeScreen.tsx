@@ -66,7 +66,7 @@ export function WelcomeScreen({
   ];
 
   return (
-    <section className="mx-auto mt-8 w-full max-w-2xl text-left rounded-2xl border border-[#e9c7e0] bg-white/70 p-4 sm:p-6 shadow-sm">
+    <section className="mx-auto mt-8 w-full max-w-6xl text-left rounded-2xl border border-[#e9c7e0] bg-white/70 p-4 sm:p-6 shadow-sm">
       <h1 className="text-2xl font-semibold tracking-tight sm:text-[30px] pb-3 pt-12 text-[#4e2a58]">
         Welcome to TestScribe
       </h1>
@@ -88,30 +88,50 @@ export function WelcomeScreen({
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
-              checked={!!contextSelections?.playwright || !!isContextAttached?.("playwright")}
+              checked={
+                !!contextSelections?.playwright ||
+                !!isContextAttached?.("playwright")
+              }
               disabled={!!isContextAttached?.("playwright")}
               onChange={() => onToggleContext && onToggleContext("playwright")}
-              title={isContextAttached?.("playwright") ? "already attached for this thread" : undefined}
+              title={
+                isContextAttached?.("playwright")
+                  ? "already attached for this thread"
+                  : undefined
+              }
             />
             <span>Playwright</span>
           </label>
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
-              checked={!!contextSelections?.selenium || !!isContextAttached?.("selenium")}
+              checked={
+                !!contextSelections?.selenium ||
+                !!isContextAttached?.("selenium")
+              }
               disabled={!!isContextAttached?.("selenium")}
               onChange={() => onToggleContext && onToggleContext("selenium")}
-              title={isContextAttached?.("selenium") ? "already attached for this thread" : undefined}
+              title={
+                isContextAttached?.("selenium")
+                  ? "already attached for this thread"
+                  : undefined
+              }
             />
             <span>Selenium</span>
           </label>
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
-              checked={!!contextSelections?.cypress || !!isContextAttached?.("cypress")}
+              checked={
+                !!contextSelections?.cypress || !!isContextAttached?.("cypress")
+              }
               disabled={!!isContextAttached?.("cypress")}
               onChange={() => onToggleContext && onToggleContext("cypress")}
-              title={isContextAttached?.("cypress") ? "already attached for this thread" : undefined}
+              title={
+                isContextAttached?.("cypress")
+                  ? "already attached for this thread"
+                  : undefined
+              }
             />
             <span>Cypress</span>
           </label>
@@ -136,12 +156,12 @@ export function WelcomeScreen({
       </div>
 
       {!hasMessages && (
-        <div className="mx-auto mt-5 w-full max-w-2xl divide-y divide-rose-100 overflow-hidden rounded-2xl text-left pt-1">
+        <div className=" mt-5 w-full divide-y divide-rose-100 overflow-hidden rounded-2xl text-left pt-1 align-left">
           {starters.map((prompt) => (
             <button
               key={prompt}
               onClick={() => onSuggestionClick(prompt)}
-              className="block w-full px-5 py-3 text-left text-rose-900/90 transition hover:bg-[#ed78c6]/20 text-font-10px"
+              className="block w-full px-5 py-3 text-left text-rose-900/90 transition hover:bg-[#ed78c6]/20 text-font-10px align-left"
             >
               {prompt}
             </button>

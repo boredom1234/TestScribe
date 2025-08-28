@@ -373,7 +373,7 @@ export default function Home() {
           {isContextMenuOpen && (
             <div className="absolute right-0 mt-2 w-72 rounded-lg border border-[#e9c7e0] bg-white p-3 shadow-lg">
               <div className="mb-2 text-sm font-semibold text-[#8a0254]">
-                Framework Contexts
+                Framework Contexts <small><sup><span className="text-[#008000]">powered by Context 7</span></sup></small>
               </div>
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm">
@@ -508,7 +508,7 @@ export default function Home() {
       {activeThread && activeThread.messages.length > 0 && totalThreadTokens > 0 && (
         <div className="fixed bottom-3 right-3 z-40">
           <div className="rounded-full bg-white/90 border border-rose-200 px-3 py-1 text-xs font-medium text-[#432A78] shadow-sm">
-            {totalThreadTokens} token count
+            {totalThreadTokens} total token count
           </div>
         </div>
       )}
