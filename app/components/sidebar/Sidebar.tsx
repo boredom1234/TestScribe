@@ -55,7 +55,7 @@ export function Sidebar({
 
   // Grouping helper similar to Claude's sidebar sections
   const getSectionLabel = (timestamp?: number) => {
-    if (!timestamp) return "Older";
+    if (!timestamp || timestamp >= Date.now()) return "Recent";
     const now = new Date();
     const startOfToday = new Date(
       now.getFullYear(),
