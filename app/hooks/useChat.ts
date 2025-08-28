@@ -8,21 +8,35 @@ export function useChat() {
   const STORAGE_MODEL = "t3chat:selectedModel";
   const STORAGE_SIDEBAR = "t3chat:sidebarCollapsed";
 
-  const [threads, setThreads] = useLocalStorage<Thread[]>(STORAGE_THREADS, [{ id: crypto.randomUUID(), title: "Greeting Title", messages: [] }]);
-  const [activeThreadId, setActiveThreadId] = useLocalStorage<string>(STORAGE_ACTIVE, "");
-  const [selectedModel, setSelectedModel] = useLocalStorage<string>(STORAGE_MODEL, "gpt-5-mini");
+  // Initialize with empty array to avoid SSR/CSR mismatches
+  const [threads, setThreads, threadsHydrated] = useLocalStorage<Thread[]>(STORAGE_THREADS, []);
+  const [activeThreadId, setActiveThreadId, activeIdHydrated] = useLocalStorage<string>(STORAGE_ACTIVE, "");
+  const [selectedModel, setSelectedModel] = useLocalStorage<string>(STORAGE_MODEL, "gpt-4o-mini");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useLocalStorage<boolean>(STORAGE_SIDEBAR, false);
   
   const [isLoading, setIsLoading] = React.useState(false);
   const [messageStartTime, setMessageStartTime] = React.useState<number | null>(null);
   const [firstTokenTime, setFirstTokenTime] = React.useState<number | null>(null);
 
-  // Ensure we always have a valid active thread id after hydration
+  // Create default thread after hydration if none exists
   React.useEffect(() => {
-    if (!activeThreadId && threads[0]) {
+    if (threadsHydrated && threads.length === 0) {
+      const defaultThread: Thread = {
+        id: crypto.randomUUID(),
+        title: "New Chat",
+        messages: []
+      };
+      setThreads([defaultThread]);
+      setActiveThreadId(defaultThread.id);
+    }
+  }, [threadsHydrated, threads.length, setThreads, setActiveThreadId]);
+
+  // Set active thread after hydration if none is set
+  React.useEffect(() => {
+    if (threadsHydrated && activeIdHydrated && threads.length > 0 && !activeThreadId) {
       setActiveThreadId(threads[0].id);
     }
-  }, [threads, activeThreadId, setActiveThreadId]);
+  }, [threadsHydrated, activeIdHydrated, threads.length, activeThreadId, setActiveThreadId]);
 
   const activeThread = threads.find((t) => t.id === activeThreadId) ?? threads[0];
 

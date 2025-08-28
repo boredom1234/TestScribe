@@ -68,7 +68,14 @@ export default function Home() {
     }
     measure();
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    // Observe dynamic height changes (e.g., attachments, model selector)
+    const el = composerRef.current;
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => measure()) : null;
+    if (el && ro) ro.observe(el);
+    return () => {
+      window.removeEventListener("resize", measure);
+      ro?.disconnect();
+    };
   }, []);
 
   const showWelcome = (activeThread?.messages.length ?? 0) === 0 && input.trim().length === 0;
@@ -169,21 +176,20 @@ export default function Home() {
           )}
 
           {/* Chat Composer */}
-          <div ref={composerRef}>
-            <ChatComposer
-              input={input}
-              onInputChange={setInput}
-              onSendMessage={handleSendMessage}
-              selectedModel={selectedModel}
-              onModelChange={setSelectedModel}
-              attachments={attachments}
-              onAttachmentsChange={setAttachments}
-              onPreviewAttachment={openPreview}
-              selectedTools={selectedTools}
-              onOpenToolsModal={openToolsModal}
-              onDomExtractPaste={handleDomExtractPaste}
-            />
-          </div>
+          <ChatComposer
+            ref={composerRef}
+            input={input}
+            onInputChange={setInput}
+            onSendMessage={handleSendMessage}
+            selectedModel={selectedModel}
+            onModelChange={setSelectedModel}
+            attachments={attachments}
+            onAttachmentsChange={setAttachments}
+            onPreviewAttachment={openPreview}
+            selectedTools={selectedTools}
+            onOpenToolsModal={openToolsModal}
+            onDomExtractPaste={handleDomExtractPaste}
+          />
         </div>
       </div>
 
@@ -202,6 +208,7 @@ export default function Home() {
         fileName={previewName}
         content={previewContent}
       />
+
     </div>
   );
 }

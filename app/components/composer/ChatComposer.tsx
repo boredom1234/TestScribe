@@ -17,20 +17,22 @@ interface ChatComposerProps {
   onDomExtractPaste: (file: File) => void;
 }
 
-export function ChatComposer({ 
-  input,
-  onInputChange,
-  onSendMessage,
-  selectedModel,
-  onModelChange,
-  attachments,
-  onAttachmentsChange,
-  onPreviewAttachment,
-  selectedTools,
-  onOpenToolsModal,
-  onDomExtractPaste
-}: ChatComposerProps) {
-  const composerRef = React.useRef<HTMLDivElement | null>(null);
+export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(function ChatComposer(
+  { 
+    input,
+    onInputChange,
+    onSendMessage,
+    selectedModel,
+    onModelChange,
+    attachments,
+    onAttachmentsChange,
+    onPreviewAttachment,
+    selectedTools,
+    onOpenToolsModal,
+    onDomExtractPaste
+  }: ChatComposerProps,
+  ref
+) {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -58,7 +60,7 @@ export function ChatComposer({
 
   return (
     <section className="mx-auto mt-10 w-full max-w-3xl">
-      <div className="input-bar" ref={composerRef}>
+      <div className="input-bar" ref={ref}>
         <div className="flex items-end gap-3">
           <div className="flex-1">
             <textarea
@@ -106,4 +108,4 @@ export function ChatComposer({
       </div>
     </section>
   );
-}
+});
