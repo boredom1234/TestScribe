@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "T3Chat - Composio",
-  description: "T3Chat - Composio",
+  title: "TestScribe",
+  description: "TestScribe",
 };
 
 export default function RootLayout({

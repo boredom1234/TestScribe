@@ -66,6 +66,24 @@ export function useChat() {
   const activeThread =
     threads.find((t) => t.id === activeThreadId) ?? threads[0];
 
+  // Estimated total tokens across the entire active thread
+  const totalThreadTokens = React.useMemo(() => {
+    const thread = activeThread;
+    if (!thread) return 0;
+    let total = 0;
+    for (const m of thread.messages) {
+      const contentLen = m.content ? m.content.length : 0;
+      total += Math.ceil(contentLen / 3.5);
+      if (m.attachments && m.attachments.length) {
+        for (const att of m.attachments) {
+          const attLen = att.content ? att.content.length : 0;
+          total += Math.ceil(attLen / 3.5);
+        }
+      }
+    }
+    return total;
+  }, [activeThread]);
+
   const sendMessage = async (
     text: string,
     selectedTools: string[],
@@ -420,5 +438,6 @@ export function useChat() {
     renameThread,
     branchOff,
     retryMessage,
+    totalThreadTokens,
   };
 }

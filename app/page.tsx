@@ -33,6 +33,7 @@ export default function Home() {
     renameThread,
     branchOff,
     retryMessage,
+    totalThreadTokens,
   } = useChat();
 
   const {
@@ -431,6 +432,15 @@ export default function Home() {
         fileName={previewName}
         content={previewContent}
       />
+
+      {/* Thread Token Counter - bottom right */}
+      {activeThread && activeThread.messages.length > 0 && totalThreadTokens > 0 && (
+        <div className="fixed bottom-3 right-3 z-40">
+          <div className="rounded-full bg-white/90 border border-rose-200 px-3 py-1 text-xs font-medium text-[#432A78] shadow-sm">
+            {totalThreadTokens} token count
+          </div>
+        </div>
+      )}
     </div>
   );
 }
