@@ -93,6 +93,11 @@ input, textarea {
   caret-color: hsl(var(--primary));
 }
 
+/* Global pointer cursor for buttons and role="button" elements */
+button, [role="button"] {
+  cursor: pointer;
+}
+
 /* Chat input bar styling per design */
 .input-bar {
   position: fixed;

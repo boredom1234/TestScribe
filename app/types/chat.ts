@@ -20,7 +20,13 @@ export type ChatMessage = {
   attachments?: AttachmentMeta[];
 };
 
-export type Thread = { id: string; title: string; messages: ChatMessage[] };
+export type Thread = { 
+  id: string; 
+  title: string; 
+  messages: ChatMessage[];
+  isBranched?: boolean;
+  parentId?: string; // original thread id when branched
+};
 
 export type Category = "create" | "explore" | "code" | "learn";
 

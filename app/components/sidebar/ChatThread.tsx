@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from 'react';
-import { IconEdit, IconTrash, IconCheck, IconX, IconMessageSquare } from '../ui/icons';
+import { IconEdit, IconTrash, IconCheck, IconX, IconMessageSquare, IconBranch } from '../ui/icons';
 
 export interface Thread {
   id: string;
   title: string;
   messages: Array<{ id: string; role: "user" | "assistant"; content: string; timestamp?: number }>;
+  isBranched?: boolean;
+  parentId?: string;
 }
 
 interface ChatThreadProps {
@@ -21,6 +23,9 @@ export function ChatThread({ thread, isActive, onSelect, onDelete, onRename }: C
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(thread.title);
   const [showActions, setShowActions] = useState(false);
+
+  // Treat older branched threads (created before isBranched existed) as branched too
+  const isBranched = Boolean(thread.isBranched || thread.parentId || thread.title.startsWith('Branch:'));
 
   const handleRename = () => {
     if (editTitle.trim() && editTitle !== thread.title) {
@@ -72,7 +77,7 @@ export function ChatThread({ thread, isActive, onSelect, onDelete, onRename }: C
     >
       <div className="flex items-start gap-3">
         <div className={`flex-shrink-0 mt-0.5 ${isActive ? 'text-[#ca0277]' : 'text-[#6F4DA3]'}`}>
-          <IconMessageSquare />
+          {isBranched ? <IconBranch /> : <IconMessageSquare />}
         </div>
         
         <div className="flex-1 min-w-0">
@@ -114,10 +119,15 @@ export function ChatThread({ thread, isActive, onSelect, onDelete, onRename }: C
           ) : (
             <>
               <div className="flex items-center justify-between">
-                <h3 className={`font-medium text-sm truncate ${
+                <h3 className={`font-medium text-sm truncate flex items-center gap-1 ${
                   isActive ? 'text-[#432A78]' : 'text-[#432A78]/90'
                 }`}>
                   {thread.title}
+                  {isBranched && (
+                    <span className="ml-1 text-[#6F4DA3]" title="Branched chat">
+                      <IconBranch />
+                    </span>
+                  )}
                 </h3>
                 
                 {showActions && !isEditing && (

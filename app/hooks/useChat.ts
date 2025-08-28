@@ -263,13 +263,18 @@ export function useChat() {
 
   const branchOff = (message: ChatMessage) => {
     const messageIndex = activeThread.messages.findIndex(m => m.id === message.id);
-    const messagesUpToHere = activeThread.messages.slice(0, messageIndex);
+    // If message not found, fall back to full history
+    const messagesUpToHere = messageIndex >= 0
+      ? activeThread.messages.slice(0, messageIndex + 1) // include the selected message
+      : activeThread.messages;
     
     const newThreadId = crypto.randomUUID();
     const newThread: Thread = {
       id: newThreadId,
       title: `Branch: ${message.content.slice(0, 30)}...`,
-      messages: messagesUpToHere
+      messages: messagesUpToHere,
+      isBranched: true,
+      parentId: activeThread.id
     };
     
     setThreads(prev => [newThread, ...prev]);
