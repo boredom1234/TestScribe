@@ -1,6 +1,7 @@
-export function IconChevronDown() {
+export function IconClose() {
   return (
     <svg
+      xmlns="http://www.w3.org/2000/svg"
       width="14"
       height="14"
       viewBox="0 0 24 24"
@@ -9,9 +10,10 @@ export function IconChevronDown() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      aria-hidden
     >
-      <polyline points="6 9 12 15 18 9"></polyline>
+      <circle cx="12" cy="12" r="10" />
+      <path d="m15 9-6 6" />
+      <path d="m9 9 6 6" />
     </svg>
   );
 }

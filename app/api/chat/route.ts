@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       prompt?: string; 
       model?: string; 
       tools?: string[];
-      attachments?: Array<{ name: string; size: number; type: string; content?: string; domInspExtractData?: boolean }>;
+      attachments?: Array<{ name: string; size: number; type: string; content?: string; domInspExtractData?: boolean; externalContext?: boolean }>;
     } = await req.json();
     
     // Prepare base system prompt with current datetime
@@ -106,6 +106,23 @@ export async function POST(req: Request) {
           };
           
           msgsWithAttachment = [attachmentMessage, ...msgs];
+        }
+      }
+      // Inject external framework contexts (Playwright / Selenium / Cypress)
+      const externalContexts = attachments.filter(a => a.externalContext && typeof a.content === 'string' && a.content.length > 0);
+      if (externalContexts.length > 0) {
+        const hasExistingExternal = msgsWithAttachment.some(msg => 
+          msg.role === "user" && msg.content && msg.content.includes("--- ATTACHED EXTERNAL CONTEXT ---")
+        );
+        if (!hasExistingExternal) {
+          const combinedExt = externalContexts
+            .map(a => `Attachment: ${a.name}\n\n\x60\x60\x60\n${a.content}\n\x60\x60\x60`)
+            .join('\n\n');
+          const externalMessage: Message = {
+            role: "user",
+            content: `--- ATTACHED EXTERNAL CONTEXT ---\nThe following framework reference material is provided by the user. Use it as guidance and ground truth when writing code, picking APIs, and proposing examples. Do not quote excessively; summarize and apply appropriately.\n\n${combinedExt}\n--- END EXTERNAL CONTEXT ---`
+          };
+          msgsWithAttachment = [externalMessage, ...msgsWithAttachment];
         }
       }
     }
