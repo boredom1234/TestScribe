@@ -1,5 +1,5 @@
 import React from "react";
-import { ChatMessage } from '../../types/chat';
+import { ChatMessage, AttachmentMeta } from '../../types/chat';
 import { MessageBubble } from './MessageBubble';
 
 interface MessageListProps {
@@ -9,6 +9,7 @@ interface MessageListProps {
   onCopy: () => void;
   onBranchOff: (message: ChatMessage) => void;
   onRetry: (message: ChatMessage) => void;
+  onPreviewAttachment: (att: AttachmentMeta) => void;
 }
 
 export function MessageList({ 
@@ -17,7 +18,8 @@ export function MessageList({
   composerHeight,
   onCopy,
   onBranchOff,
-  onRetry
+  onRetry,
+  onPreviewAttachment
 }: MessageListProps) {
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -35,6 +37,7 @@ export function MessageList({
             onCopy={onCopy}
             onBranchOff={onBranchOff}
             onRetry={onRetry}
+            onPreviewAttachment={onPreviewAttachment}
           />
         ))}
         {isLoading && (

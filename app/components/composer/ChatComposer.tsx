@@ -72,7 +72,7 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
               placeholder="Type your message here..."
               className="h-[68px] w-full resize-none rounded-l-2xl border border-transparent bg-[#FBF7FB] px-4 py-3 text-[#432A78] placeholder-[#6F4DA3] outline-none"
             />
-            <div className="mt-2 flex items-center gap-2 text-xs text-rose-700">
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-rose-700">
               <ModelSelector 
                 selectedModel={selectedModel}
                 onModelChange={onModelChange}

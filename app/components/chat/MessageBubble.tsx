@@ -1,21 +1,24 @@
 import React from "react";
 import ReactMarkdown from 'react-markdown';
-import { ChatMessage } from '../../types/chat';
+import { ChatMessage, AttachmentMeta } from '../../types/chat';
 import { MessageActions } from './MessageActions';
 import { ToolCallComponent } from './ToolCallComponent';
+import { IconPaperclip } from '../ui/icons';
 
 interface MessageBubbleProps {
   message: ChatMessage;
   onCopy: () => void;
   onBranchOff: (message: ChatMessage) => void;
   onRetry: (message: ChatMessage) => void;
+  onPreviewAttachment: (att: AttachmentMeta) => void;
 }
 
 export function MessageBubble({ 
   message, 
   onCopy, 
   onBranchOff, 
-  onRetry 
+  onRetry,
+  onPreviewAttachment,
 }: MessageBubbleProps) {
   return (
     <div className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -56,6 +59,24 @@ export function MessageBubble({
                 message.content
               )}
             </div>
+
+            {/* Attachment chips (only for user messages with attachments) */}
+            {message.role === "user" && Array.isArray(message.attachments) && message.attachments.length > 0 && (
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-rose-900/90">
+                {message.attachments.map((att, idx) => (
+                  <span
+                    key={`${att.name}-${idx}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => onPreviewAttachment(att)}
+                    className="inline-flex items-center gap-1 rounded-full border border-rose-200/60 bg-white/70 px-2.5 py-1 cursor-pointer hover:bg-white"
+                  >
+                    <span className="text-rose-500"><IconPaperclip /></span>
+                    {att.name}
+                  </span>
+                ))}
+              </div>
+            )}
             
             {/* Message Actions - only for assistant messages */}
             {message.role === "assistant" && (

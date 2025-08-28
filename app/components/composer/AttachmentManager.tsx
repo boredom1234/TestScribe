@@ -46,7 +46,7 @@ export function AttachmentManager({
       </button>
       
       {attachments.length > 0 && (
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-rose-900/90">
+        <div className="mt-2 basis-full w-full flex flex-wrap items-center gap-2 text-[11px] text-rose-900/90">
           {attachments.map((file, idx) => (
             <span
               key={`${file.name}-${idx}`}

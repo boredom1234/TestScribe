@@ -10,6 +10,20 @@ export function useAttachments() {
     setAttachments(prev => [...prev, ...files]);
   };
 
+  // Open preview directly from provided content (e.g., from message metadata)
+  const openPreviewContent = (name: string, content: string) => {
+    setPreviewName(name);
+    setPreviewContent(content);
+    setIsPreviewOpen(true);
+  };
+
+  // Open preview by name only (no content available)
+  const openPreviewNameOnly = (name: string) => {
+    setPreviewName(name);
+    setPreviewContent(null);
+    setIsPreviewOpen(true);
+  };
+
   const removeAttachment = (index: number) => {
     setAttachments(prev => prev.filter((_, i) => i !== index));
   };
@@ -93,6 +107,8 @@ export function useAttachments() {
     previewName,
     isPreviewOpen,
     openPreview,
+    openPreviewContent,
+    openPreviewNameOnly,
     closePreview,
     preparePayload
   };

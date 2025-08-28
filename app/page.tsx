@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Category } from './types/chat';
+import { Category, AttachmentMeta } from './types/chat';
 import { Sidebar } from './components/sidebar/Sidebar';
 import { MobileSidebar } from './components/sidebar/MobileSidebar';
 import { WelcomeScreen } from './components/welcome/WelcomeScreen';
@@ -41,6 +41,8 @@ export default function Home() {
     previewName,
     isPreviewOpen,
     openPreview,
+    openPreviewContent,
+    openPreviewNameOnly,
     closePreview,
     preparePayload
   } = useAttachments();
@@ -104,6 +106,14 @@ export default function Home() {
 
   const handleDomExtractPaste = (file: File) => {
     addAttachments([file]);
+  };
+
+  const handlePreviewAttachment = (att: AttachmentMeta) => {
+    if (att.content) {
+      openPreviewContent(att.name, att.content);
+    } else {
+      openPreviewNameOnly(att.name);
+    }
   };
 
   const handleToggleSidebar = () => {
@@ -172,6 +182,7 @@ export default function Home() {
               onCopy={handleCopyMessage}
               onBranchOff={branchOff}
               onRetry={handleRetryMessage}
+              onPreviewAttachment={handlePreviewAttachment}
             />
           )}
 

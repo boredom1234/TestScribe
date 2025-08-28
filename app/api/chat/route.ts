@@ -61,7 +61,7 @@ function resolveModel(selected?: string) {
     "Llama 3.3 70B": () => groq("llama-3.3-70b-versatile"),
   };
 
-  return modelMap[name]?.() || openai("gpt-4o-mini");
+  return modelMap[name]?.() || google("gemini-2.5-flash");
 }
 
 export async function POST(req: Request) {

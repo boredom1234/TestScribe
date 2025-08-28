@@ -11,7 +11,7 @@ export function useChat() {
   // Initialize with empty array to avoid SSR/CSR mismatches
   const [threads, setThreads, threadsHydrated] = useLocalStorage<Thread[]>(STORAGE_THREADS, []);
   const [activeThreadId, setActiveThreadId, activeIdHydrated] = useLocalStorage<string>(STORAGE_ACTIVE, "");
-  const [selectedModel, setSelectedModel] = useLocalStorage<string>(STORAGE_MODEL, "gpt-4o-mini");
+  const [selectedModel, setSelectedModel] = useLocalStorage<string>(STORAGE_MODEL, "gemini-2.5-flash");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useLocalStorage<boolean>(STORAGE_SIDEBAR, false);
   
   const [isLoading, setIsLoading] = React.useState(false);
@@ -55,7 +55,14 @@ export function useChat() {
       id: crypto.randomUUID(), 
       role: "user", 
       content: text.trim(),
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      attachments: (attachmentsPayload || []).map((a: any) => ({
+        name: a.name,
+        size: a.size,
+        type: a.type,
+        domInspExtractData: a.domInspExtractData,
+        content: a.content,
+      }))
     };
     
     const optimistic = threads.map((t) => {

@@ -1,3 +1,11 @@
+export interface AttachmentMeta {
+  name: string;
+  size?: number;
+  type: string;
+  domInspExtractData?: boolean;
+  content?: string;
+}
+
 export type ChatMessage = { 
   id: string; 
   role: "user" | "assistant"; 
@@ -9,6 +17,7 @@ export type ChatMessage = {
   totalTokens?: number;
   timeToFirstToken?: number;
   timestamp?: number;
+  attachments?: AttachmentMeta[];
 };
 
 export type Thread = { id: string; title: string; messages: ChatMessage[] };
