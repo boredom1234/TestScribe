@@ -1,7 +1,7 @@
 import React from "react";
 import { ModelSelector } from './ModelSelector';
 import { AttachmentManager } from './AttachmentManager';
-import { IconArrowUp, IconTools } from '../ui/icons';
+import { IconArrowUp, IconTools, IconPlusSparkles, IconRefresh } from '../ui/icons';
 
 interface ChatComposerProps {
   input: string;
@@ -34,6 +34,8 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
   ref
 ) {
 
+  const [isFormatting, setIsFormatting] = React.useState(false);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -55,6 +57,55 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
       }
     } catch {
       // Not JSON; fall through to normal paste
+    }
+  };
+
+  const handleFormatPrompt = async () => {
+    const raw = (input || "").trim();
+    if (!raw || isFormatting) return;
+    setIsFormatting(true);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          model: selectedModel,
+          // Ask the LLM to rewrite the prompt cleanly
+          prompt: `Rewrite and format the following user prompt into a clear, concise, and well-structured instruction.\n- Preserve intent and key details.\n- Organize with sections (Goal, Context, Constraints, Inputs/Outputs, Steps, Examples) only if relevant.\n- Avoid extra commentary.\n- Return only the rewritten prompt.\n\n---\n${raw}`,
+          tools: [],
+        }),
+      });
+
+      // Stream and accumulate the result text
+      const contentType = res.headers.get("content-type") || "";
+      let formatted = "";
+      if (contentType.includes("text/plain")) {
+        const reader = res.body?.getReader();
+        const decoder = new TextDecoder();
+        if (reader) {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            formatted += decoder.decode(value, { stream: true });
+          }
+        } else {
+          formatted = await res.text();
+        }
+      } else {
+        try {
+          const data = await res.json();
+          formatted = String(data.content ?? "");
+        } catch {
+          formatted = await res.text();
+        }
+      }
+
+      const clean = formatted.trim();
+      if (clean) onInputChange(clean);
+    } catch (e) {
+      // Silently fail; keep user's original input
+    } finally {
+      setIsFormatting(false);
     }
   };
 
@@ -97,6 +148,25 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
               />
             </div>
           </div>
+          {input.trim().length > 0 && (
+            <button
+              aria-label="Format prompt"
+              onClick={handleFormatPrompt}
+              disabled={isFormatting}
+              title="Format prompt"
+              className={`grid h-10 w-10 place-items-center rounded-xl border border-rose-200/70 bg-white/70 text-rose-700 shadow-sm transition hover:bg-white ${isFormatting ? "opacity-80" : ""}`}
+            >
+              {isFormatting ? (
+                <span className="animate-spin text-rose-600">
+                  <IconRefresh />
+                </span>
+              ) : (
+                <span className="text-rose-600">
+                  <IconPlusSparkles />
+                </span>
+              )}
+            </button>
+          )}
           <button 
             aria-label="Send" 
             onClick={() => onSendMessage(input)} 
