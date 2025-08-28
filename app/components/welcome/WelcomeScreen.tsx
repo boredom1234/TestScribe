@@ -76,7 +76,9 @@ export function WelcomeScreen({
         <div className="mb-2 text-sm font-semibold text-[#8a0254]">
           Framework Contexts{" "}
           <small>
-            <sup><span className="text-[#008000]">powered by Context 7</span></sup>
+            <sup>
+              <span className="text-[#008000]">powered by Context 7</span>
+            </sup>
           </small>
         </div>
         <div className="flex flex-wrap gap-4 text-sm">

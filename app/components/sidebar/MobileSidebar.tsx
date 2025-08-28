@@ -1,8 +1,8 @@
 "use client";
 
-import React from 'react';
-import { ChatThread, Thread } from './ChatThread';
-import { IconPlus, IconX } from '../ui/icons';
+import React from "react";
+import { ChatThread, Thread } from "./ChatThread";
+import { IconPlus, IconX } from "../ui/icons";
 
 interface MobileSidebarProps {
   threads: Thread[];
@@ -23,15 +23,16 @@ export function MobileSidebar({
   onDeleteThread,
   onRenameThread,
   isOpen,
-  onClose
+  onClose,
 }: MobileSidebarProps) {
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState("");
 
-  const filteredThreads = threads.filter(thread =>
-    thread.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    thread.messages.some(msg => 
-      msg.content.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+  const filteredThreads = threads.filter(
+    (thread) =>
+      thread.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      thread.messages.some((msg) =>
+        msg.content.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
   );
 
   const sortedThreads = filteredThreads.sort((a, b) => {
@@ -44,14 +45,18 @@ export function MobileSidebar({
 
   // Grouping helper similar to Claude's sidebar sections
   const getSectionLabel = (timestamp?: number) => {
-    if (!timestamp) return 'Older';
+    if (!timestamp) return "Older";
     const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    ).getTime();
     const ONE_DAY = 24 * 60 * 60 * 1000;
-    if (timestamp >= startOfToday) return 'Today';
-    if (timestamp >= startOfToday - ONE_DAY) return 'Yesterday';
-    if (timestamp >= startOfToday - 7 * ONE_DAY) return 'Last 7 days';
-    return 'Older';
+    if (timestamp >= startOfToday) return "Today";
+    if (timestamp >= startOfToday - ONE_DAY) return "Yesterday";
+    if (timestamp >= startOfToday - 7 * ONE_DAY) return "Last 7 days";
+    return "Older";
   };
 
   if (!isOpen) return null;
@@ -59,11 +64,11 @@ export function MobileSidebar({
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/50 z-40 md:hidden"
         onClick={onClose}
       />
-      
+
       {/* Mobile Sidebar */}
       <div className="fixed left-0 top-0 h-full w-80 bg-[#fdf7fd] border-r border-[#ee81ca]/20 z-50 flex flex-col md:hidden transform transition-transform duration-300">
         {/* Header */}
@@ -132,10 +137,13 @@ export function MobileSidebar({
           ) : (
             <div className="space-y-2">
               {sortedThreads.map((thread, idx) => {
-                const lastTs = thread.messages[thread.messages.length - 1]?.timestamp;
+                const lastTs =
+                  thread.messages[thread.messages.length - 1]?.timestamp;
                 const section = getSectionLabel(lastTs);
                 const prevThread = idx > 0 ? sortedThreads[idx - 1] : undefined;
-                const prevTs = prevThread?.messages[prevThread.messages.length - 1]?.timestamp;
+                const prevTs =
+                  prevThread?.messages[prevThread.messages.length - 1]
+                    ?.timestamp;
                 const prevSection = getSectionLabel(prevTs);
                 const showHeader = idx === 0 || section !== prevSection;
                 return (
@@ -168,7 +176,7 @@ export function MobileSidebar({
         {/* Footer */}
         <div className="p-4 border-t border-[#ee81ca]/20">
           <div className="text-xs text-[#6F4DA3]/60 text-center">
-            {threads.length} chat{threads.length !== 1 ? 's' : ''}
+            {threads.length} chat{threads.length !== 1 ? "s" : ""}
           </div>
         </div>
       </div>

@@ -1,25 +1,33 @@
 import React from "react";
-import { modelOptions } from '../../constants/prompts';
-import { IconChevronDown } from '../ui/icons';
+import { modelOptions } from "../../constants/prompts";
+import { IconChevronDown } from "../ui/icons";
 
 interface ModelSelectorProps {
   selectedModel: string;
   onModelChange: (model: string) => void;
 }
 
-export function ModelSelector({ selectedModel, onModelChange }: ModelSelectorProps) {
+export function ModelSelector({
+  selectedModel,
+  onModelChange,
+}: ModelSelectorProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
   const menuRef = React.useRef<HTMLDivElement | null>(null);
 
   const filteredModels = React.useMemo(
-    () => modelOptions.filter((m) => m.toLowerCase().includes(query.toLowerCase())),
-    [query]
+    () =>
+      modelOptions.filter((m) => m.toLowerCase().includes(query.toLowerCase())),
+    [query],
   );
 
   React.useEffect(() => {
     function onClickOutside(e: MouseEvent) {
-      if (isOpen && menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      if (
+        isOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -49,17 +57,19 @@ export function ModelSelector({ selectedModel, onModelChange }: ModelSelectorPro
           />
           <ul role="listbox" className="max-h-56 overflow-auto">
             {filteredModels.length === 0 && (
-              <li className="px-2 py-1 text-xs text-rose-500">No models found</li>
+              <li className="px-2 py-1 text-xs text-rose-500">
+                No models found
+              </li>
             )}
             {filteredModels.map((model) => (
               <li key={model}>
                 <button
                   role="option"
-                  onClick={() => { 
-                    onModelChange(model); 
-                    setIsOpen(false); 
+                  onClick={() => {
+                    onModelChange(model);
+                    setIsOpen(false);
                   }}
-                  className={`block w-full rounded-md px-2 py-1 text-left text-sm hover:bg-[#ed78c6]/20 ${selectedModel === model ? 'bg-[#ed78c6]/20' : ''}`}
+                  className={`block w-full rounded-md px-2 py-1 text-left text-sm hover:bg-[#ed78c6]/20 ${selectedModel === model ? "bg-[#ed78c6]/20" : ""}`}
                 >
                   {model}
                 </button>

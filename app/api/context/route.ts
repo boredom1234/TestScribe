@@ -3,7 +3,8 @@ export const maxDuration = 30;
 const CONTEXT_SOURCES: Record<string, string> = {
   playwright: "https://context7.com/microsoft/playwright/llms.txt?tokens=60000",
   selenium: "https://context7.com/seleniumhq/selenium/llms.txt?tokens=60000",
-  cypress: "https://context7.com/cypress-io/cypress-documentation/llms.txt?tokens=60000",
+  cypress:
+    "https://context7.com/cypress-io/cypress-documentation/llms.txt?tokens=60000",
 };
 
 export async function GET(req: Request) {

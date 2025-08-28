@@ -13,7 +13,7 @@ function resolveModel(selected?: string) {
     "gpt-5": () => openai("gpt-5"),
     "gpt-5-mini": () => openai("gpt-5-mini"),
     "gpt-5-nano": () => openai("gpt-5-nano"),
-    "o3": () => openai("o3"),
+    o3: () => openai("o3"),
     "o4-mini": () => openai("o4-mini"),
     "GPT-4.1": () => openai("gpt-4.1"),
     "GPT-4.1 Mini": () => openai("gpt-4.1-mini"),
@@ -39,7 +39,8 @@ function resolveModel(selected?: string) {
 
 export async function POST(req: Request) {
   try {
-    const { text, model: selectedModel }: { text?: string; model?: string } = await req.json();
+    const { text, model: selectedModel }: { text?: string; model?: string } =
+      await req.json();
     const toFormat = (text ?? "").trim();
     if (!toFormat) {
       return Response.json({ text: "" });
@@ -60,9 +61,7 @@ export async function POST(req: Request) {
     const result = streamText({
       model,
       system: systemPrompt,
-      messages: [
-        { role: "user", content: toFormat },
-      ],
+      messages: [{ role: "user", content: toFormat }],
     });
 
     let acc = "";

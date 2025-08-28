@@ -1,6 +1,6 @@
 import React from "react";
-import { ChatMessage, AttachmentMeta } from '../../types/chat';
-import { MessageBubble } from './MessageBubble';
+import { ChatMessage, AttachmentMeta } from "../../types/chat";
+import { MessageBubble } from "./MessageBubble";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -12,14 +12,14 @@ interface MessageListProps {
   onPreviewAttachment: (att: AttachmentMeta) => void;
 }
 
-export function MessageList({ 
-  messages, 
-  isLoading, 
+export function MessageList({
+  messages,
+  isLoading,
   composerHeight,
   onCopy,
   onBranchOff,
   onRetry,
-  onPreviewAttachment
+  onPreviewAttachment,
 }: MessageListProps) {
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -28,7 +28,10 @@ export function MessageList({
   }, [messages, isLoading]);
 
   return (
-    <div className="mx-auto mt-6 w-full max-w-3xl flex-1" style={{ paddingBottom: composerHeight + 24 }}>
+    <div
+      className="mx-auto mt-6 w-full max-w-3xl flex-1"
+      style={{ paddingBottom: composerHeight + 24 }}
+    >
       <div className="space-y-4">
         {messages.map((message) => (
           <MessageBubble

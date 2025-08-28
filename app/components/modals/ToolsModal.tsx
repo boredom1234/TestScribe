@@ -1,6 +1,6 @@
 import React from "react";
-import { Toolkit, Tool } from '../../types/chat';
-import { Modal } from './Modal';
+import { Toolkit, Tool } from "../../types/chat";
+import { Modal } from "./Modal";
 
 interface ToolsModalProps {
   isOpen: boolean;
@@ -9,21 +9,23 @@ interface ToolsModalProps {
   onSelectedToolsChange: (tools: string[]) => void;
 }
 
-function ToolsModalContent({ 
-  selectedTools, 
-  setSelectedTools 
-}: { 
-  selectedTools: string[]; 
-  setSelectedTools: (tools: string[]) => void; 
+function ToolsModalContent({
+  selectedTools,
+  setSelectedTools,
+}: {
+  selectedTools: string[];
+  setSelectedTools: (tools: string[]) => void;
 }) {
   const [toolkits, setToolkits] = React.useState<Toolkit[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [expandedToolkit, setExpandedToolkit] = React.useState<string | null>(null);
+  const [expandedToolkit, setExpandedToolkit] = React.useState<string | null>(
+    null,
+  );
 
   React.useEffect(() => {
     async function fetchToolkits() {
       try {
-        const response = await fetch('/api/toolkits');
+        const response = await fetch("/api/toolkits");
         const data = await response.json();
         setToolkits(data.items || []);
       } catch (error) {
@@ -36,7 +38,7 @@ function ToolsModalContent({
 
   const toggleTool = (toolSlug: string) => {
     if (selectedTools.includes(toolSlug)) {
-      setSelectedTools(selectedTools.filter(t => t !== toolSlug));
+      setSelectedTools(selectedTools.filter((t) => t !== toolSlug));
     } else {
       setSelectedTools([...selectedTools, toolSlug]);
     }
@@ -55,10 +57,9 @@ function ToolsModalContent({
         const data = await response.json();
         toolkit.tools = data.items || [];
         setToolkits([...toolkits]); // Trigger re-render
-      } catch (error) {
-      }
+      } catch (error) {}
     }
-    
+
     setExpandedToolkit(toolkit.slug);
   };
 
@@ -73,32 +74,43 @@ function ToolsModalContent({
   return (
     <div className="space-y-4">
       {toolkits.map((toolkit) => (
-        <div key={toolkit.slug} className="border border-gray-200 rounded-lg overflow-hidden">
+        <div
+          key={toolkit.slug}
+          className="border border-gray-200 rounded-lg overflow-hidden"
+        >
           <button
             onClick={() => expandToolkit(toolkit)}
             className="w-full p-4 text-left hover:bg-gray-50 flex items-center justify-between"
           >
             <div className="flex items-center space-x-3">
               {toolkit.meta.logo && (
-                <img src={toolkit.meta.logo} alt={toolkit.name} className="w-8 h-8" />
+                <img
+                  src={toolkit.meta.logo}
+                  alt={toolkit.name}
+                  className="w-8 h-8"
+                />
               )}
               <div>
                 <h3 className="font-medium text-gray-900">{toolkit.name}</h3>
-                <p className="text-sm text-gray-500">{toolkit.meta.description}</p>
-                <p className="text-xs text-gray-400">{toolkit.meta.tools_count} tools</p>
+                <p className="text-sm text-gray-500">
+                  {toolkit.meta.description}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {toolkit.meta.tools_count} tools
+                </p>
               </div>
             </div>
             <div className="text-gray-400">
-              {expandedToolkit === toolkit.slug ? '−' : '+'}
+              {expandedToolkit === toolkit.slug ? "−" : "+"}
             </div>
           </button>
-          
+
           {expandedToolkit === toolkit.slug && toolkit.tools && (
             <div className="border-t border-gray-200 bg-gray-50">
               <div className="p-4 space-y-2">
                 {toolkit.tools.map((tool) => (
-                  <label 
-                    key={tool.slug || tool.name} 
+                  <label
+                    key={tool.slug || tool.name}
                     className="flex items-start space-x-3 p-2 hover:bg-white rounded cursor-pointer"
                   >
                     <input
@@ -108,9 +120,15 @@ function ToolsModalContent({
                       className="mt-1 text-[#aa4673] focus:ring-[#aa4673]"
                     />
                     <div className="flex-1">
-                      <div className="font-medium text-sm text-gray-900">{tool.displayName || tool.name}</div>
-                      <div className="text-xs text-gray-500">{tool.description}</div>
-                      <div className="text-xs text-gray-400 font-mono">{tool.slug || tool.name}</div>
+                      <div className="font-medium text-sm text-gray-900">
+                        {tool.displayName || tool.name}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {tool.description}
+                      </div>
+                      <div className="text-xs text-gray-400 font-mono">
+                        {tool.slug || tool.name}
+                      </div>
                     </div>
                   </label>
                 ))}
@@ -123,11 +141,11 @@ function ToolsModalContent({
   );
 }
 
-export function ToolsModal({ 
-  isOpen, 
-  onClose, 
-  selectedTools, 
-  onSelectedToolsChange 
+export function ToolsModal({
+  isOpen,
+  onClose,
+  selectedTools,
+  onSelectedToolsChange,
 }: ToolsModalProps) {
   const footer = (
     <>
@@ -153,7 +171,7 @@ export function ToolsModal({
       title="Select Tools"
       footer={footer}
     >
-      <ToolsModalContent 
+      <ToolsModalContent
         selectedTools={selectedTools}
         setSelectedTools={onSelectedToolsChange}
       />

@@ -1,20 +1,20 @@
 "use client";
 
 import React from "react";
-import { AttachmentMeta } from './types/chat';
-import { Sidebar } from './components/sidebar/Sidebar';
-import { MobileSidebar } from './components/sidebar/MobileSidebar';
-import { WelcomeScreen } from './components/welcome/WelcomeScreen';
-import { MessageList } from './components/chat/MessageList';
-import { ChatComposer } from './components/composer/ChatComposer';
-import { ToolsModal } from './components/modals/ToolsModal';
-import { AttachmentPreviewModal } from './components/modals/AttachmentPreviewModal';
-import { IconHamburger } from './components/ui/icons';
-import { IconCircleFadingPlus } from './components/ui/icons/IconCircleFadingPlus';
-import { IconClose } from './components/ui/icons/IconClose';
-import { useChat } from './hooks/useChat';
-import { useAttachments } from './hooks/useAttachments';
-import { useTools } from './hooks/useTools';
+import { AttachmentMeta } from "./types/chat";
+import { Sidebar } from "./components/sidebar/Sidebar";
+import { MobileSidebar } from "./components/sidebar/MobileSidebar";
+import { WelcomeScreen } from "./components/welcome/WelcomeScreen";
+import { MessageList } from "./components/chat/MessageList";
+import { ChatComposer } from "./components/composer/ChatComposer";
+import { ToolsModal } from "./components/modals/ToolsModal";
+import { AttachmentPreviewModal } from "./components/modals/AttachmentPreviewModal";
+import { IconHamburger } from "./components/ui/icons";
+import { IconCircleFadingPlus } from "./components/ui/icons/IconCircleFadingPlus";
+import { IconClose } from "./components/ui/icons/IconClose";
+import { useChat } from "./hooks/useChat";
+import { useAttachments } from "./hooks/useAttachments";
+import { useTools } from "./hooks/useTools";
 
 export default function Home() {
   const {
@@ -32,7 +32,7 @@ export default function Home() {
     deleteThread,
     renameThread,
     branchOff,
-    retryMessage
+    retryMessage,
   } = useChat();
 
   const {
@@ -46,7 +46,7 @@ export default function Home() {
     openPreviewContent,
     openPreviewNameOnly,
     closePreview,
-    preparePayload
+    preparePayload,
   } = useAttachments();
 
   const {
@@ -54,13 +54,13 @@ export default function Home() {
     setSelectedTools,
     isToolsModalOpen,
     openToolsModal,
-    closeToolsModal
+    closeToolsModal,
   } = useTools();
 
   const [input, setInput] = React.useState("");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
   const [composerHeight, setComposerHeight] = React.useState<number>(160);
-  
+
   const composerRef = React.useRef<HTMLDivElement | null>(null);
 
   // External context selection and data store
@@ -70,14 +70,18 @@ export default function Home() {
     selenium: false,
     cypress: false,
   });
-  const [contextData, setContextData] = React.useState<Record<string, string>>({});
+  const [contextData, setContextData] = React.useState<Record<string, string>>(
+    {},
+  );
   const contextMenuRef = React.useRef<HTMLDivElement | null>(null);
 
   const toggleContextMenu = () => setIsContextMenuOpen((v) => !v);
 
-  const fetchAndStoreContext = async (key: 'playwright'|'selenium'|'cypress') => {
+  const fetchAndStoreContext = async (
+    key: "playwright" | "selenium" | "cypress",
+  ) => {
     try {
-      const res = await fetch(`/api/context?key=${key}`, { cache: 'no-store' });
+      const res = await fetch(`/api/context?key=${key}`, { cache: "no-store" });
       const text = await res.text();
       setContextData((prev) => ({ ...prev, [key]: text }));
     } catch (e) {
@@ -85,7 +89,9 @@ export default function Home() {
     }
   };
 
-  const handleToggleContext = async (key: 'playwright'|'selenium'|'cypress') => {
+  const handleToggleContext = async (
+    key: "playwright" | "selenium" | "cypress",
+  ) => {
     setContextSelections((prev) => {
       const next = { ...prev, [key]: !prev[key] };
       return next;
@@ -107,15 +113,15 @@ export default function Home() {
       }
     }
     function onDocKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setIsContextMenuOpen(false);
       }
     }
-    document.addEventListener('mousedown', onDocMouseDown);
-    document.addEventListener('keydown', onDocKeyDown);
+    document.addEventListener("mousedown", onDocMouseDown);
+    document.addEventListener("keydown", onDocKeyDown);
     return () => {
-      document.removeEventListener('mousedown', onDocMouseDown);
-      document.removeEventListener('keydown', onDocKeyDown);
+      document.removeEventListener("mousedown", onDocMouseDown);
+      document.removeEventListener("keydown", onDocKeyDown);
     };
   }, [isContextMenuOpen]);
 
@@ -129,7 +135,10 @@ export default function Home() {
     window.addEventListener("resize", measure);
     // Observe dynamic height changes (e.g., attachments, model selector)
     const el = composerRef.current;
-    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => measure()) : null;
+    const ro =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => measure())
+        : null;
     if (el && ro) ro.observe(el);
     return () => {
       window.removeEventListener("resize", measure);
@@ -141,33 +150,33 @@ export default function Home() {
 
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
-    
+
     const attachmentsPayload = await preparePayload(attachments);
     // Merge in selected external contexts as virtual attachments
     const externalContexts: any[] = [];
     if (contextSelections.playwright && contextData.playwright) {
       externalContexts.push({
-        name: 'Playwright Context',
+        name: "Playwright Context",
         size: contextData.playwright.length,
-        type: 'text/plain',
+        type: "text/plain",
         content: contextData.playwright,
         externalContext: true,
       });
     }
     if (contextSelections.selenium && contextData.selenium) {
       externalContexts.push({
-        name: 'Selenium Context',
+        name: "Selenium Context",
         size: contextData.selenium.length,
-        type: 'text/plain',
+        type: "text/plain",
         content: contextData.selenium,
         externalContext: true,
       });
     }
     if (contextSelections.cypress && contextData.cypress) {
       externalContexts.push({
-        name: 'Cypress Context',
+        name: "Cypress Context",
         size: contextData.cypress.length,
-        type: 'text/plain',
+        type: "text/plain",
         content: contextData.cypress,
         externalContext: true,
       });
@@ -183,13 +192,31 @@ export default function Home() {
     const attachmentsPayload = await preparePayload(attachments);
     const externalContexts: any[] = [];
     if (contextSelections.playwright && contextData.playwright) {
-      externalContexts.push({ name: 'Playwright Context', size: contextData.playwright.length, type: 'text/plain', content: contextData.playwright, externalContext: true });
+      externalContexts.push({
+        name: "Playwright Context",
+        size: contextData.playwright.length,
+        type: "text/plain",
+        content: contextData.playwright,
+        externalContext: true,
+      });
     }
     if (contextSelections.selenium && contextData.selenium) {
-      externalContexts.push({ name: 'Selenium Context', size: contextData.selenium.length, type: 'text/plain', content: contextData.selenium, externalContext: true });
+      externalContexts.push({
+        name: "Selenium Context",
+        size: contextData.selenium.length,
+        type: "text/plain",
+        content: contextData.selenium,
+        externalContext: true,
+      });
     }
     if (contextSelections.cypress && contextData.cypress) {
-      externalContexts.push({ name: 'Cypress Context', size: contextData.cypress.length, type: 'text/plain', content: contextData.cypress, externalContext: true });
+      externalContexts.push({
+        name: "Cypress Context",
+        size: contextData.cypress.length,
+        type: "text/plain",
+        content: contextData.cypress,
+        externalContext: true,
+      });
     }
     const mergedAttachments = [...attachmentsPayload, ...externalContexts];
     retryMessage(message, selectedTools, mergedAttachments);
@@ -209,7 +236,9 @@ export default function Home() {
 
   const handlePreviewAttachment = (att: AttachmentMeta) => {
     if (att.content) {
-      const isJson = (att.type === 'application/json') || att.name.toLowerCase().endsWith('.json');
+      const isJson =
+        att.type === "application/json" ||
+        att.name.toLowerCase().endsWith(".json");
       if (isJson) {
         try {
           const pretty = JSON.stringify(JSON.parse(att.content), null, 2);
@@ -281,45 +310,70 @@ export default function Home() {
           </button>
           {isContextMenuOpen && (
             <div className="absolute right-0 mt-2 w-72 rounded-lg border border-[#e9c7e0] bg-white p-3 shadow-lg">
-              <div className="mb-2 text-sm font-semibold text-[#8a0254]">Framework Contexts</div>
+              <div className="mb-2 text-sm font-semibold text-[#8a0254]">
+                Framework Contexts
+              </div>
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
                     checked={!!contextSelections.playwright}
-                    onChange={() => handleToggleContext('playwright')}
+                    onChange={() => handleToggleContext("playwright")}
                   />
                   <span className="flex-1">Playwright</span>
-                  <span className="text-[10px] text-gray-500">{contextData.playwright ? 'fetched' : contextSelections.playwright ? 'loading…' : ''}</span>
+                  <span className="text-[10px] text-gray-500">
+                    {contextData.playwright
+                      ? "fetched"
+                      : contextSelections.playwright
+                        ? "loading…"
+                        : ""}
+                  </span>
                 </label>
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
                     checked={!!contextSelections.selenium}
-                    onChange={() => handleToggleContext('selenium')}
+                    onChange={() => handleToggleContext("selenium")}
                   />
                   <span className="flex-1">Selenium</span>
-                  <span className="text-[10px] text-gray-500">{contextData.selenium ? 'fetched' : contextSelections.selenium ? 'loading…' : ''}</span>
+                  <span className="text-[10px] text-gray-500">
+                    {contextData.selenium
+                      ? "fetched"
+                      : contextSelections.selenium
+                        ? "loading…"
+                        : ""}
+                  </span>
                 </label>
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
                     checked={!!contextSelections.cypress}
-                    onChange={() => handleToggleContext('cypress')}
+                    onChange={() => handleToggleContext("cypress")}
                   />
                   <span className="flex-1">Cypress</span>
-                  <span className="text-[10px] text-gray-500">{contextData.cypress ? 'fetched' : contextSelections.cypress ? 'loading…' : ''}</span>
+                  <span className="text-[10px] text-gray-500">
+                    {contextData.cypress
+                      ? "fetched"
+                      : contextSelections.cypress
+                        ? "loading…"
+                        : ""}
+                  </span>
                 </label>
               </div>
               <div className="mt-3 text-[11px] text-gray-500">
-                Selected contexts will be sent with your next message to guide the model.
+                Selected contexts will be sent with your next message to guide
+                the model.
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <div className={"mx-auto flex gap-6 p-4 sm:p-6 lg:py-8 justify-center transition-all duration-300"}>
+      <div
+        className={
+          "mx-auto flex gap-6 p-4 sm:p-6 lg:py-8 justify-center transition-all duration-300"
+        }
+      >
         <div className="w-full space-y-6 px-2 pt-8 duration-300 animate-in fade-in-50 zoom-in-90 sm:px-8 pt-18">
           {/* Welcome Screen */}
           {showWelcome && (
@@ -377,7 +431,6 @@ export default function Home() {
         fileName={previewName}
         content={previewContent}
       />
-
     </div>
   );
 }

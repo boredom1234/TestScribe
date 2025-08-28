@@ -1,5 +1,5 @@
 import React from "react";
-import { IconPaperclip } from '../ui/icons';
+import { IconPaperclip } from "../ui/icons";
 
 interface AttachmentManagerProps {
   attachments: File[];
@@ -7,10 +7,10 @@ interface AttachmentManagerProps {
   onPreviewAttachment: (file: File) => void;
 }
 
-export function AttachmentManager({ 
-  attachments, 
+export function AttachmentManager({
+  attachments,
   onAttachmentsChange,
-  onPreviewAttachment
+  onPreviewAttachment,
 }: AttachmentManagerProps) {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -41,10 +41,12 @@ export function AttachmentManager({
         onClick={() => fileInputRef.current?.click()}
         className="inline-flex items-center gap-1 rounded-full border border-rose-200/60 bg-white/70 px-2.5 py-1 font-medium hover:bg-white"
       >
-        <span className="text-rose-500"><IconPaperclip /></span>
+        <span className="text-rose-500">
+          <IconPaperclip />
+        </span>
         Attach
       </button>
-      
+
       {attachments.length > 0 && (
         <div className="mt-2 basis-full w-full flex flex-wrap items-center gap-2 text-[11px] text-rose-900/90">
           {attachments.map((file, idx) => (
@@ -60,8 +62,8 @@ export function AttachmentManager({
               <button
                 aria-label="Remove attachment"
                 className="ml-1 text-rose-500 hover:text-rose-700"
-                onClick={(e) => { 
-                  e.stopPropagation(); 
+                onClick={(e) => {
+                  e.stopPropagation();
                   removeAttachment(idx);
                 }}
               >

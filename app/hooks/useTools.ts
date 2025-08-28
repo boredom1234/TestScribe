@@ -5,10 +5,10 @@ export function useTools() {
   const [isToolsModalOpen, setIsToolsModalOpen] = React.useState(false);
 
   const toggleTool = (toolSlug: string) => {
-    setSelectedTools(prev => 
-      prev.includes(toolSlug) 
-        ? prev.filter(t => t !== toolSlug)
-        : [...prev, toolSlug]
+    setSelectedTools((prev) =>
+      prev.includes(toolSlug)
+        ? prev.filter((t) => t !== toolSlug)
+        : [...prev, toolSlug],
     );
   };
 
@@ -31,6 +31,6 @@ export function useTools() {
     isToolsModalOpen,
     openToolsModal,
     closeToolsModal,
-    clearSelectedTools
+    clearSelectedTools,
   };
 }

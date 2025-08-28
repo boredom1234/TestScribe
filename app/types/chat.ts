@@ -6,9 +6,9 @@ export interface AttachmentMeta {
   content?: string;
 }
 
-export type ChatMessage = { 
-  id: string; 
-  role: "user" | "assistant"; 
+export type ChatMessage = {
+  id: string;
+  role: "user" | "assistant";
   content: string;
   toolCalls?: ToolCall[];
   toolResults?: ToolResult[];
@@ -20,9 +20,9 @@ export type ChatMessage = {
   attachments?: AttachmentMeta[];
 };
 
-export type Thread = { 
-  id: string; 
-  title: string; 
+export type Thread = {
+  id: string;
+  title: string;
   messages: ChatMessage[];
   isBranched?: boolean;
   parentId?: string; // original thread id when branched
@@ -37,7 +37,7 @@ export interface Toolkit {
     description: string;
     logo: string;
     tools_count: number;
-    categories: Array<{id: string; name: string}>;
+    categories: Array<{ id: string; name: string }>;
   };
   tools?: Tool[];
 }
@@ -50,14 +50,14 @@ export interface Tool {
 }
 
 export interface ToolCall {
-  type: 'tool-call';
+  type: "tool-call";
   toolName: string;
   toolCallId: string;
   args: any;
 }
 
 export interface ToolResult {
-  type: 'tool-result';
+  type: "tool-result";
   toolCallId: string;
   toolName: string;
   result: any;

@@ -2,12 +2,14 @@ import React from "react";
 
 export function useAttachments() {
   const [attachments, setAttachments] = React.useState<File[]>([]);
-  const [previewContent, setPreviewContent] = React.useState<string | null>(null);
+  const [previewContent, setPreviewContent] = React.useState<string | null>(
+    null,
+  );
   const [previewName, setPreviewName] = React.useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = React.useState(false);
 
   const addAttachments = (files: File[]) => {
-    setAttachments(prev => [...prev, ...files]);
+    setAttachments((prev) => [...prev, ...files]);
   };
 
   // Open preview directly from provided content (e.g., from message metadata)
@@ -25,7 +27,7 @@ export function useAttachments() {
   };
 
   const removeAttachment = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
   const clearAttachments = () => {
@@ -37,11 +39,18 @@ export function useAttachments() {
       const name = file.name;
       const type = file.type || "";
       let content = "";
-      
-      if (type.startsWith("text/") || type === "application/json" || name.toLowerCase().endsWith(".json")) {
+
+      if (
+        type.startsWith("text/") ||
+        type === "application/json" ||
+        name.toLowerCase().endsWith(".json")
+      ) {
         const raw = await file.text();
         try {
-          if (type === "application/json" || name.toLowerCase().endsWith(".json")) {
+          if (
+            type === "application/json" ||
+            name.toLowerCase().endsWith(".json")
+          ) {
             content = JSON.stringify(JSON.parse(raw), null, 2);
           } else {
             content = raw;
@@ -52,7 +61,7 @@ export function useAttachments() {
       } else {
         content = "Preview not available for this file type.";
       }
-      
+
       setPreviewName(name);
       setPreviewContent(content);
       setIsPreviewOpen(true);
@@ -70,10 +79,19 @@ export function useAttachments() {
   };
 
   const preparePayload = async (files: File[]) => {
-    const results: Array<{ name: string; size: number; type: string; content?: string; domInspExtractData?: boolean }> = [];
+    const results: Array<{
+      name: string;
+      size: number;
+      type: string;
+      content?: string;
+      domInspExtractData?: boolean;
+    }> = [];
     for (const f of files) {
       const base = { name: f.name, size: f.size, type: f.type };
-      if (f.type === 'application/json' || f.name.toLowerCase().endsWith('.json')) {
+      if (
+        f.type === "application/json" ||
+        f.name.toLowerCase().endsWith(".json")
+      ) {
         try {
           const text = await f.text();
           try {
@@ -110,6 +128,6 @@ export function useAttachments() {
     openPreviewContent,
     openPreviewNameOnly,
     closePreview,
-    preparePayload
+    preparePayload,
   };
 }

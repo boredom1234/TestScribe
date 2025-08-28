@@ -350,7 +350,7 @@ export function MessageBubble({
             <div className="mb-3 w-full">
               {message.toolCalls.map((toolCall) => {
                 const toolResult = message.toolResults?.find(
-                  (tr) => tr.toolCallId === toolCall.toolCallId
+                  (tr) => tr.toolCallId === toolCall.toolCallId,
                 );
                 return (
                   <ToolCallComponent
@@ -387,7 +387,7 @@ export function MessageBubble({
                         ...props
                       }: any) {
                         const match = /language-([A-Za-z0-9_+-]+)/.exec(
-                          className || ""
+                          className || "",
                         );
                         const rawLang = (match?.[1] || "").trim().toLowerCase();
                         const lang = rawLang;

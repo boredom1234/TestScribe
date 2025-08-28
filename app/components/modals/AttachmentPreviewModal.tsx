@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal } from './Modal';
+import { Modal } from "./Modal";
 
 interface AttachmentPreviewModalProps {
   isOpen: boolean;
@@ -8,11 +8,11 @@ interface AttachmentPreviewModalProps {
   content: string | null;
 }
 
-export function AttachmentPreviewModal({ 
-  isOpen, 
-  onClose, 
-  fileName, 
-  content 
+export function AttachmentPreviewModal({
+  isOpen,
+  onClose,
+  fileName,
+  content,
 }: AttachmentPreviewModalProps) {
   const footer = (
     <button
@@ -27,7 +27,7 @@ export function AttachmentPreviewModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={fileName || 'Attachment Preview'}
+      title={fileName || "Attachment Preview"}
       footer={footer}
     >
       {content ? (
