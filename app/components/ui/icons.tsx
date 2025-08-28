@@ -1,6 +1,8 @@
 import React from "react";
 import { IconCircleFadingPlus as IconCircleFadingPlusInner } from "./icons/IconCircleFadingPlus";
 import { IconClose as IconCloseInner } from "./icons/IconClose";
+import { IconX as IconXInner } from "./icons/IconX";
+import { IconCheck as IconCheckInner } from "./icons/IconCheck";
 
 export function IconHamburger() {
   return (

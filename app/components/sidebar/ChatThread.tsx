@@ -41,6 +41,7 @@ export function ChatThread({
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(thread.title);
   const [showActions, setShowActions] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   // Treat older branched threads (created before isBranched existed) as branched too
   const isBranched = Boolean(
@@ -95,7 +96,7 @@ export function ChatThread({
           ? "bg-[#f5dbef] border border-[#ee81ca]/30 shadow-sm"
           : "hover:bg-[#f5dbef]/50 border border-transparent"
       }`}
-      onClick={() => !isEditing && onSelect(thread.id)}
+      onClick={() => !isEditing && !confirmDelete && onSelect(thread.id)}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
@@ -158,30 +159,57 @@ export function ChatThread({
                   )}
                 </h3>
 
-                {showActions && !isEditing && (
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsEditing(true);
-                      }}
-                      className="p-1 text-[#6F4DA3] hover:text-[#ca0277] hover:bg-[#ca0277]/10 rounded transition-colors"
-                      title="Rename chat"
-                    >
-                      <IconEdit />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (confirm("Delete this chat?")) {
-                          onDelete(thread.id);
-                        }
-                      }}
-                      className="p-1 text-[#6F4DA3] hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-                      title="Delete chat"
-                    >
-                      <IconTrash />
-                    </button>
+                {(showActions || confirmDelete) && !isEditing && (
+                  <div
+                    className={`flex gap-1 ${confirmDelete ? "" : "opacity-0 group-hover:opacity-100"} transition-opacity`}
+                  >
+                    {confirmDelete ? (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(thread.id);
+                          }}
+                          className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                          title="Confirm delete"
+                        >
+                          <IconCheck />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmDelete(false);
+                          }}
+                          className="p-1 text-[#6F4DA3] hover:bg-[#6F4DA3]/10 rounded transition-colors"
+                          title="Cancel"
+                        >
+                          <IconX />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsEditing(true);
+                          }}
+                          className="p-1 text-[#6F4DA3] hover:text-[#ca0277] hover:bg-[#ca0277]/10 rounded transition-colors"
+                          title="Rename chat"
+                        >
+                          <IconEdit />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmDelete(true);
+                          }}
+                          className="p-1 text-[#6F4DA3] hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                          title="Delete chat"
+                        >
+                          <IconTrash />
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

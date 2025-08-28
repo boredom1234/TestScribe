@@ -13,3 +13,5 @@ export { IconRefresh } from "./IconRefresh";
 export { IconHamburger } from "./IconHamburger";
 export { IconCircleFadingPlus } from "./IconCircleFadingPlus";
 export { IconClose } from "./IconClose";
+export { IconX } from "./IconX";
+export { IconCheck } from "./IconCheck";
