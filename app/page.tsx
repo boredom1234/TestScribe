@@ -110,6 +110,14 @@ export default function Home() {
 
   const handlePreviewAttachment = (att: AttachmentMeta) => {
     if (att.content) {
+      const isJson = (att.type === 'application/json') || att.name.toLowerCase().endsWith('.json');
+      if (isJson) {
+        try {
+          const pretty = JSON.stringify(JSON.parse(att.content), null, 2);
+          openPreviewContent(att.name, pretty);
+          return;
+        } catch {}
+      }
       openPreviewContent(att.name, att.content);
     } else {
       openPreviewNameOnly(att.name);
