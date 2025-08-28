@@ -1,5 +1,5 @@
 import React from "react";
-import { ChatMessage, Thread } from "../types/chat";
+import { ChatMessage, Thread, FrameworkContextKey } from "../types/chat";
 import { useLocalStorage } from "./useLocalStorage";
 
 export function useChat() {
@@ -39,6 +39,7 @@ export function useChat() {
         id: crypto.randomUUID(),
         title: "New Chat",
         messages: [],
+        attachedContexts: [],
       };
       setThreads([defaultThread]);
       setActiveThreadId(defaultThread.id);
@@ -348,7 +349,7 @@ export function useChat() {
 
   const startNewChat = () => {
     const id = crypto.randomUUID();
-    const newThread: Thread = { id, title: "New Chat", messages: [] };
+    const newThread: Thread = { id, title: "New Chat", messages: [], attachedContexts: [] };
     setThreads((prev) => [newThread, ...prev]);
     setActiveThreadId(id);
   };
@@ -364,6 +365,7 @@ export function useChat() {
           id: newId,
           title: "New Chat",
           messages: [],
+          attachedContexts: [],
         };
         setActiveThreadId(newId);
         return [newThread];
@@ -395,10 +397,30 @@ export function useChat() {
       messages: messagesUpToHere,
       isBranched: true,
       parentId: activeThread.id,
+      attachedContexts: activeThread.attachedContexts ? [...activeThread.attachedContexts] : [],
     };
 
     setThreads((prev) => [newThread, ...prev]);
     setActiveThreadId(newThreadId);
+  };
+
+  // Mark provided framework contexts as attached to the active thread
+  const markContextsAttached = (keys: FrameworkContextKey[]) => {
+    if (!keys || keys.length === 0) return;
+    if (!activeThread) return;
+    setThreads((prev) =>
+      prev.map((t) => {
+        if (t.id !== activeThread.id) return t;
+        const existing = new Set(t.attachedContexts || []);
+        for (const k of keys) existing.add(k);
+        return { ...t, attachedContexts: Array.from(existing) as FrameworkContextKey[] };
+      }),
+    );
+  };
+
+  const isContextAttached = (key: FrameworkContextKey) => {
+    if (!activeThread) return false;
+    return (activeThread.attachedContexts || []).includes(key);
   };
 
   const retryMessage = (
@@ -439,5 +461,7 @@ export function useChat() {
     branchOff,
     retryMessage,
     totalThreadTokens,
+    markContextsAttached,
+    isContextAttached,
   };
 }

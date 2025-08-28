@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AttachmentMeta } from "./types/chat";
+import { AttachmentMeta, FrameworkContextKey } from "./types/chat";
 import { Sidebar } from "./components/sidebar/Sidebar";
 import { MobileSidebar } from "./components/sidebar/MobileSidebar";
 import { WelcomeScreen } from "./components/welcome/WelcomeScreen";
@@ -34,6 +34,8 @@ export default function Home() {
     branchOff,
     retryMessage,
     totalThreadTokens,
+    markContextsAttached,
+    isContextAttached,
   } = useChat();
 
   const {
@@ -93,6 +95,8 @@ export default function Home() {
   const handleToggleContext = async (
     key: "playwright" | "selenium" | "cypress",
   ) => {
+    // Prevent enabling if already attached for this thread
+    if (isContextAttached(key)) return;
     setContextSelections((prev) => {
       const next = { ...prev, [key]: !prev[key] };
       return next;
@@ -148,6 +152,7 @@ export default function Home() {
   }, []);
 
   const showWelcome = (activeThread?.messages.length ?? 0) === 0;
+  const attachedCount = activeThread?.attachedContexts?.length ?? 0;
 
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
@@ -155,7 +160,12 @@ export default function Home() {
     const attachmentsPayload = await preparePayload(attachments);
     // Merge in selected external contexts as virtual attachments
     const externalContexts: any[] = [];
-    if (contextSelections.playwright && contextData.playwright) {
+    const keysToAttach: FrameworkContextKey[] = [];
+    if (
+      contextSelections.playwright &&
+      contextData.playwright &&
+      !isContextAttached("playwright")
+    ) {
       externalContexts.push({
         name: "Playwright Context",
         size: contextData.playwright.length,
@@ -163,8 +173,13 @@ export default function Home() {
         content: contextData.playwright,
         externalContext: true,
       });
+      keysToAttach.push("playwright");
     }
-    if (contextSelections.selenium && contextData.selenium) {
+    if (
+      contextSelections.selenium &&
+      contextData.selenium &&
+      !isContextAttached("selenium")
+    ) {
       externalContexts.push({
         name: "Selenium Context",
         size: contextData.selenium.length,
@@ -172,8 +187,13 @@ export default function Home() {
         content: contextData.selenium,
         externalContext: true,
       });
+      keysToAttach.push("selenium");
     }
-    if (contextSelections.cypress && contextData.cypress) {
+    if (
+      contextSelections.cypress &&
+      contextData.cypress &&
+      !isContextAttached("cypress")
+    ) {
       externalContexts.push({
         name: "Cypress Context",
         size: contextData.cypress.length,
@@ -181,10 +201,19 @@ export default function Home() {
         content: contextData.cypress,
         externalContext: true,
       });
+      keysToAttach.push("cypress");
     }
     const mergedAttachments = [...attachmentsPayload, ...externalContexts];
 
     await sendMessage(text, selectedTools, mergedAttachments);
+    if (keysToAttach.length) {
+      markContextsAttached(keysToAttach);
+      setContextSelections((prev) => {
+        const next = { ...prev } as typeof prev;
+        for (const k of keysToAttach) next[k] = false;
+        return next;
+      });
+    }
     setInput("");
     setAttachments([]);
   };
@@ -192,7 +221,12 @@ export default function Home() {
   const handleRetryMessage = async (message: any) => {
     const attachmentsPayload = await preparePayload(attachments);
     const externalContexts: any[] = [];
-    if (contextSelections.playwright && contextData.playwright) {
+    const keysToAttach: FrameworkContextKey[] = [];
+    if (
+      contextSelections.playwright &&
+      contextData.playwright &&
+      !isContextAttached("playwright")
+    ) {
       externalContexts.push({
         name: "Playwright Context",
         size: contextData.playwright.length,
@@ -200,8 +234,13 @@ export default function Home() {
         content: contextData.playwright,
         externalContext: true,
       });
+      keysToAttach.push("playwright");
     }
-    if (contextSelections.selenium && contextData.selenium) {
+    if (
+      contextSelections.selenium &&
+      contextData.selenium &&
+      !isContextAttached("selenium")
+    ) {
       externalContexts.push({
         name: "Selenium Context",
         size: contextData.selenium.length,
@@ -209,8 +248,13 @@ export default function Home() {
         content: contextData.selenium,
         externalContext: true,
       });
+      keysToAttach.push("selenium");
     }
-    if (contextSelections.cypress && contextData.cypress) {
+    if (
+      contextSelections.cypress &&
+      contextData.cypress &&
+      !isContextAttached("cypress")
+    ) {
       externalContexts.push({
         name: "Cypress Context",
         size: contextData.cypress.length,
@@ -218,9 +262,18 @@ export default function Home() {
         content: contextData.cypress,
         externalContext: true,
       });
+      keysToAttach.push("cypress");
     }
     const mergedAttachments = [...attachmentsPayload, ...externalContexts];
     retryMessage(message, selectedTools, mergedAttachments);
+    if (keysToAttach.length) {
+      markContextsAttached(keysToAttach);
+      setContextSelections((prev) => {
+        const next = { ...prev } as typeof prev;
+        for (const k of keysToAttach) next[k] = false;
+        return next;
+      });
+    }
   };
 
   const handleSuggestionClick = (prompt: string) => {
@@ -309,6 +362,14 @@ export default function Home() {
           >
             {isContextMenuOpen ? <IconClose /> : <IconCircleFadingPlus />}
           </button>
+          {attachedCount > 0 && (
+            <span
+              className="absolute -top-1 -right-1 grid h-4 min-w-[1rem] place-items-center rounded-full bg-[#ca0277] px-1 text-[8px] font-semibold text-white border border-white shadow"
+              title={`${attachedCount} context${attachedCount === 1 ? "" : "s"} attached`}
+            >
+              {attachedCount}
+            </span>
+          )}
           {isContextMenuOpen && (
             <div className="absolute right-0 mt-2 w-72 rounded-lg border border-[#e9c7e0] bg-white p-3 shadow-lg">
               <div className="mb-2 text-sm font-semibold text-[#8a0254]">
@@ -318,46 +379,55 @@ export default function Home() {
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
-                    checked={!!contextSelections.playwright}
+                    checked={!!contextSelections.playwright || isContextAttached("playwright")}
+                    disabled={isContextAttached("playwright")}
                     onChange={() => handleToggleContext("playwright")}
                   />
                   <span className="flex-1">Playwright</span>
                   <span className="text-[10px] text-gray-500">
-                    {contextData.playwright
-                      ? "fetched"
-                      : contextSelections.playwright
-                        ? "loading…"
-                        : ""}
+                    {isContextAttached("playwright")
+                      ? "already attached"
+                      : contextData.playwright
+                        ? "fetched"
+                        : contextSelections.playwright
+                          ? "loading…"
+                          : ""}
                   </span>
                 </label>
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
-                    checked={!!contextSelections.selenium}
+                    checked={!!contextSelections.selenium || isContextAttached("selenium")}
+                    disabled={isContextAttached("selenium")}
                     onChange={() => handleToggleContext("selenium")}
                   />
                   <span className="flex-1">Selenium</span>
                   <span className="text-[10px] text-gray-500">
-                    {contextData.selenium
-                      ? "fetched"
-                      : contextSelections.selenium
-                        ? "loading…"
-                        : ""}
+                    {isContextAttached("selenium")
+                      ? "already attached"
+                      : contextData.selenium
+                        ? "fetched"
+                        : contextSelections.selenium
+                          ? "loading…"
+                          : ""}
                   </span>
                 </label>
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
-                    checked={!!contextSelections.cypress}
+                    checked={!!contextSelections.cypress || isContextAttached("cypress")}
+                    disabled={isContextAttached("cypress")}
                     onChange={() => handleToggleContext("cypress")}
                   />
                   <span className="flex-1">Cypress</span>
                   <span className="text-[10px] text-gray-500">
-                    {contextData.cypress
-                      ? "fetched"
-                      : contextSelections.cypress
-                        ? "loading…"
-                        : ""}
+                    {isContextAttached("cypress")
+                      ? "already attached"
+                      : contextData.cypress
+                        ? "fetched"
+                        : contextSelections.cypress
+                          ? "loading…"
+                          : ""}
                   </span>
                 </label>
               </div>
@@ -383,6 +453,7 @@ export default function Home() {
               hasMessages={(activeThread?.messages.length ?? 0) > 0}
               contextSelections={contextSelections}
               onToggleContext={handleToggleContext}
+              isContextAttached={isContextAttached}
             />
           )}
 

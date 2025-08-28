@@ -20,12 +20,15 @@ export type ChatMessage = {
   attachments?: AttachmentMeta[];
 };
 
+export type FrameworkContextKey = "playwright" | "selenium" | "cypress";
+
 export type Thread = {
   id: string;
   title: string;
   messages: ChatMessage[];
   isBranched?: boolean;
   parentId?: string; // original thread id when branched
+  attachedContexts?: FrameworkContextKey[];
 };
 
 export type Category = "create" | "explore" | "code" | "learn";

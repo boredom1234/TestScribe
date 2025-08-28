@@ -48,8 +48,12 @@
   --c: 320 100% 75%;
   --min: hsl(var(--c) / 0.2);
   --max: hsl(var(--c) / 1);
-  --gradientBorder-gradient:
-    linear-gradient(180deg, var(--min), var(--max), var(--min)),
+  --gradientBorder-gradient: linear-gradient(
+      180deg,
+      var(--min),
+      var(--max),
+      var(--min)
+    ),
     linear-gradient(15deg, var(--min) 50%, var(--max));
 }
 
@@ -101,6 +105,10 @@ button,
   cursor: pointer;
 }
 
+button:hover {
+  filter: brightness(1.1);
+}
+
 /* Checkbox */
 input[type="checkbox"] {
   cursor: pointer;
@@ -149,9 +157,7 @@ input[type="checkbox"] {
   outline: none;
   padding-bottom: calc(env(safe-area-inset-bottom) + 0.75rem);
   max-width: 48rem;
-  box-shadow:
-    0 8px 28px rgba(0, 0, 0, 0.18),
-    0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Typing indicator dots */
@@ -200,4 +206,23 @@ input[type="checkbox"] {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--secondary));
+  border-radius: 9999px;
+  cursor: grab;
+}
+
+::-webkit-scrollbar-thumb:active {
+  cursor: grabbing;
 }

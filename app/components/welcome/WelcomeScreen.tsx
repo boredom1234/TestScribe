@@ -14,6 +14,8 @@ interface WelcomeScreenProps {
     cypress: boolean;
   };
   onToggleContext?: (key: "playwright" | "selenium" | "cypress") => void;
+  // Optional: informer for already attached contexts to disable toggles
+  isContextAttached?: (key: "playwright" | "selenium" | "cypress") => boolean;
 }
 
 export function WelcomeScreen({
@@ -21,6 +23,7 @@ export function WelcomeScreen({
   hasMessages,
   contextSelections,
   onToggleContext,
+  isContextAttached,
 }: WelcomeScreenProps) {
   const quickActions: { label: string; prompt: string }[] = [
     {
@@ -85,24 +88,30 @@ export function WelcomeScreen({
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
-              checked={!!contextSelections?.playwright}
+              checked={!!contextSelections?.playwright || !!isContextAttached?.("playwright")}
+              disabled={!!isContextAttached?.("playwright")}
               onChange={() => onToggleContext && onToggleContext("playwright")}
+              title={isContextAttached?.("playwright") ? "already attached for this thread" : undefined}
             />
             <span>Playwright</span>
           </label>
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
-              checked={!!contextSelections?.selenium}
+              checked={!!contextSelections?.selenium || !!isContextAttached?.("selenium")}
+              disabled={!!isContextAttached?.("selenium")}
               onChange={() => onToggleContext && onToggleContext("selenium")}
+              title={isContextAttached?.("selenium") ? "already attached for this thread" : undefined}
             />
             <span>Selenium</span>
           </label>
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
-              checked={!!contextSelections?.cypress}
+              checked={!!contextSelections?.cypress || !!isContextAttached?.("cypress")}
+              disabled={!!isContextAttached?.("cypress")}
               onChange={() => onToggleContext && onToggleContext("cypress")}
+              title={isContextAttached?.("cypress") ? "already attached for this thread" : undefined}
             />
             <span>Cypress</span>
           </label>
