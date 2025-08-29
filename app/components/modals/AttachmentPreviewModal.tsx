@@ -17,7 +17,7 @@ export function AttachmentPreviewModal({
   const footer = (
     <button
       onClick={onClose}
-      className="inline-flex items-center justify-center px-6 py-2 bg-[#aa4673] text-white rounded-lg hover:bg-[#aa4673]/90 transition leading-none"
+      className="inline-flex items-center justify-center px-6 py-2 bg-[#2563eb] text-white rounded-lg hover:bg-[#2563eb]/90 transition leading-none"
     >
       Close
     </button>
@@ -31,7 +31,7 @@ export function AttachmentPreviewModal({
       footer={footer}
     >
       {content ? (
-        <pre className="whitespace-pre-wrap break-words text-sm font-mono text-[#432A78] bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <pre className="whitespace-pre-wrap break-words text-sm font-mono text-[#1e3a8a] bg-gray-50 border border-gray-200 rounded-lg p-4">
           {content}
         </pre>
       ) : (

@@ -315,7 +315,7 @@ export default function Home() {
   };
 
   return (
-    <div className="font-sans min-h-screen w-full bg-[#fdf7fd]">
+    <div className="font-sans min-h-screen w-full bg-[#f8fbff]">
       {/* Sidebar */}
       <Sidebar
         threads={threads}
@@ -345,7 +345,7 @@ export default function Home() {
         <button
           aria-label="Open sidebar"
           onClick={handleToggleMobileSidebar}
-          className="grid h-9 w-9 place-items-center rounded-lg bg-[#f5dbef] text-[#ca0277] shadow-sm hover:brightness-95"
+          className="grid h-9 w-9 place-items-center rounded-lg bg-[#dbeafe] text-[#1e3a8a] shadow-sm hover:brightness-95"
         >
           <IconHamburger />
         </button>
@@ -357,22 +357,22 @@ export default function Home() {
           <button
             aria-label="Attach framework contexts"
             onClick={toggleContextMenu}
-            className="grid h-9 w-9 place-items-center rounded-lg bg-[#f5dbef] text-[#ca0277] shadow-sm hover:brightness-95"
+            className="grid h-9 w-9 place-items-center rounded-lg bg-[#dbeafe] text-[#1e3a8a] shadow-sm hover:brightness-95"
             title="Attach Playwright / Selenium / Cypress docs to guide the model"
           >
             {isContextMenuOpen ? <IconClose /> : <IconCircleFadingPlus />}
           </button>
           {attachedCount > 0 && (
             <span
-              className="absolute -top-1 -right-1 grid h-4 min-w-[1rem] place-items-center rounded-full bg-[#ca0277] px-1 text-[8px] font-semibold text-white border border-white shadow"
+              className="absolute -top-1 -right-1 grid h-4 min-w-[1rem] place-items-center rounded-full bg-[#2563eb] px-1 text-[8px] font-semibold text-white border border-white shadow"
               title={`${attachedCount} context${attachedCount === 1 ? "" : "s"} attached`}
             >
               {attachedCount}
             </span>
           )}
           {isContextMenuOpen && (
-            <div className="absolute right-0 mt-2 w-72 rounded-lg border border-[#e9c7e0] bg-white p-3 shadow-lg">
-              <div className="mb-2 text-sm font-semibold text-[#8a0254]">
+            <div className="absolute right-0 mt-2 w-72 rounded-lg border border-blue-200 bg-white p-3 shadow-lg">
+              <div className="mb-2 text-sm font-semibold text-[#1e3a8a]">
                 Framework Contexts <small><sup><span className="text-[#008000]">powered by Context 7</span></sup></small>
               </div>
               <div className="space-y-2">
@@ -507,7 +507,7 @@ export default function Home() {
       {/* Thread Token Counter - bottom right */}
       {activeThread && activeThread.messages.length > 0 && totalThreadTokens > 0 && (
         <div className="fixed bottom-3 right-3 z-40">
-          <div className="rounded-full bg-white/90 border border-rose-200 px-3 py-1 text-xs font-medium text-[#432A78] shadow-sm">
+          <div className="rounded-full bg-white/90 border border-blue-200 px-3 py-1 text-xs font-medium text-[#1e3a8a] shadow-sm">
             {totalThreadTokens} total token count
           </div>
         </div>

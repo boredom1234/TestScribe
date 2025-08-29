@@ -93,8 +93,8 @@ export function ChatThread({
     <div
       className={`group relative rounded-xl p-3 transition-all duration-200 cursor-pointer ${
         isActive
-          ? "bg-[#f5dbef] border border-[#ee81ca]/30 shadow-sm"
-          : "hover:bg-[#f5dbef]/50 border border-transparent"
+          ? "bg-[#eff6ff] border border-[#93c5fd]/30 shadow-sm"
+          : "hover:bg-[#eff6ff]/50 border border-transparent"
       }`}
       onClick={() => !isEditing && !confirmDelete && onSelect(thread.id)}
       onMouseEnter={() => setShowActions(true)}
@@ -102,7 +102,7 @@ export function ChatThread({
     >
       <div className="flex items-start gap-3">
         <div
-          className={`flex-shrink-0 mt-0.5 ${isActive ? "text-[#ca0277]" : "text-[#6F4DA3]"}`}
+          className={`flex-shrink-0 mt-0.5 ${isActive ? "text-[#2563eb]" : "text-[#1d4ed8]"}`}
         >
           {isBranched ? <IconBranch /> : <IconMessageSquare />}
         </div>
@@ -118,7 +118,7 @@ export function ChatThread({
                   if (e.key === "Enter") handleRename();
                   if (e.key === "Escape") handleCancelEdit();
                 }}
-                className="w-full px-2 py-1 text-sm font-medium bg-white border border-[#ee81ca]/30 rounded-md text-[#432A78] focus:outline-none focus:ring-2 focus:ring-[#ca0277]/20"
+                className="w-full px-2 py-1 text-sm font-medium bg-white border border-[#93c5fd]/30 rounded-md text-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#2563eb]/20"
                 autoFocus
                 onBlur={handleRename}
               />
@@ -128,7 +128,7 @@ export function ChatThread({
                     e.stopPropagation();
                     handleRename();
                   }}
-                  className="p-1 text-[#ca0277] hover:bg-[#ca0277]/10 rounded transition-colors"
+                  className="p-1 text-[#2563eb] hover:bg-[#2563eb]/10 rounded transition-colors"
                 >
                   <IconCheck />
                 </button>
@@ -137,7 +137,7 @@ export function ChatThread({
                     e.stopPropagation();
                     handleCancelEdit();
                   }}
-                  className="p-1 text-[#6F4DA3] hover:bg-[#6F4DA3]/10 rounded transition-colors"
+                  className="p-1 text-[#1d4ed8] hover:bg-[#1d4ed8]/10 rounded transition-colors"
                 >
                   <IconX />
                 </button>
@@ -148,12 +148,12 @@ export function ChatThread({
               <div className="flex items-center justify-between">
                 <h3
                   className={`font-medium text-sm truncate flex items-center gap-1 ${
-                    isActive ? "text-[#432A78]" : "text-[#432A78]/90"
+                    isActive ? "text-[#1e3a8a]" : "text-[#1e3a8a]/90"
                   }`}
                 >
                   {thread.title}
                   {isBranched && (
-                    <span className="ml-1 text-[#6F4DA3]" title="Branched chat">
+                    <span className="ml-1 text-[#1d4ed8]" title="Branched chat">
                       <IconBranch />
                     </span>
                   )}
@@ -180,7 +180,7 @@ export function ChatThread({
                             e.stopPropagation();
                             setConfirmDelete(false);
                           }}
-                          className="p-1 text-[#6F4DA3] hover:bg-[#6F4DA3]/10 rounded transition-colors"
+                          className="p-1 text-[#1d4ed8] hover:bg-[#1d4ed8]/10 rounded transition-colors"
                           title="Cancel"
                         >
                           <IconX />
@@ -193,7 +193,7 @@ export function ChatThread({
                             e.stopPropagation();
                             setIsEditing(true);
                           }}
-                          className="p-1 text-[#6F4DA3] hover:text-[#ca0277] hover:bg-[#ca0277]/10 rounded transition-colors"
+                          className="p-1 text-[#1d4ed8] hover:text-[#2563eb] hover:bg-[#2563eb]/10 rounded transition-colors"
                           title="Rename chat"
                         >
                           <IconEdit />
@@ -203,7 +203,7 @@ export function ChatThread({
                             e.stopPropagation();
                             setConfirmDelete(true);
                           }}
-                          className="p-1 text-[#6F4DA3] hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                          className="p-1 text-[#1d4ed8] hover:text-red-500 hover:bg-red-50 rounded transition-colors"
                           title="Delete chat"
                         >
                           <IconTrash />
@@ -214,12 +214,12 @@ export function ChatThread({
                 )}
               </div>
 
-              <p className="text-xs text-[#6F4DA3]/80 mt-1 line-clamp-2">
+              <p className="text-xs text-[#1d4ed8]/80 mt-1 line-clamp-2">
                 {getLastMessage()}
               </p>
 
               {lastMessageTime && (
-                <p className="text-xs text-[#6F4DA3]/60 mt-2">
+                <p className="text-xs text-[#1d4ed8]/60 mt-2">
                   {formatDate(lastMessageTime)}
                 </p>
               )}

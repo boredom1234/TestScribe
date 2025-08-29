@@ -39,16 +39,16 @@ export function AttachmentManager({
       />
       <button
         onClick={() => fileInputRef.current?.click()}
-        className="inline-flex items-center gap-1 rounded-full border border-rose-200/60 bg-white/70 px-2.5 py-1 font-medium hover:bg-white"
+        className="inline-flex items-center gap-1 rounded-full border border-blue-200/60 bg-white/70 px-2.5 py-1 font-medium hover:bg-white"
       >
-        <span className="text-rose-500">
+        <span className="text-blue-500">
           <IconPaperclip />
         </span>
         Attach
       </button>
 
       {attachments.length > 0 && (
-        <div className="mt-2 basis-full w-full flex flex-wrap items-center gap-2 text-[11px] text-rose-900/90">
+        <div className="mt-2 basis-full w-full flex flex-wrap items-center gap-2 text-[11px] text-blue-900/90">
           {attachments.map((file, idx) => (
             <span
               key={`${file.name}-${idx}`}
@@ -56,12 +56,12 @@ export function AttachmentManager({
               tabIndex={0}
               title="Click to preview"
               onClick={() => onPreviewAttachment(file)}
-              className="inline-flex items-center gap-1 rounded-full border border-rose-200/60 bg-white/70 px-2.5 py-1 cursor-pointer hover:bg-white"
+              className="inline-flex items-center gap-1 rounded-full border border-blue-200/60 bg-white/70 px-2.5 py-1 cursor-pointer hover:bg-white"
             >
               {file.name}
               <button
                 aria-label="Remove attachment"
-                className="ml-1 text-rose-500 hover:text-rose-700"
+                className="ml-1 text-blue-500 hover:text-blue-700"
                 onClick={(e) => {
                   e.stopPropagation();
                   removeAttachment(idx);

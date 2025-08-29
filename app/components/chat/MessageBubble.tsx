@@ -314,10 +314,10 @@ function CopyButton({ content }: { content: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="inline-flex items-center gap-1 rounded border border-rose-300/70 bg-white/70 px-2 py-0.5 text-[11px] text-rose-700 hover:bg-white"
+      className="inline-flex items-center gap-1 rounded border border-blue-300/70 bg-white/70 px-2 py-0.5 text-[11px] text-blue-700 hover:bg-white"
       title={copied ? "Copied" : "Copy to clipboard"}
     >
-      <span className="text-rose-500">
+      <span className="text-blue-500">
         {copied ? <IconCheck /> : <IconCopy />}
       </span>
       {copied ? "Copied" : "Copy"}
@@ -369,12 +369,12 @@ export function MessageBubble({
             <div
               className={`${
                 message.role === "user"
-                  ? "bg-[#f5dbef] text-[#432A78]"
-                  : "bg-[#fdf7fd] text-rose-900"
+                  ? "bg-[#eff6ff] text-[#1e3a8a]"
+                  : "bg-[#f8fbff] text-blue-900"
               } whitespace-pre-wrap rounded-2xl px-4 py-3`}
             >
               {message.role === "assistant" ? (
-                <div className="prose prose-sm max-w-none prose-headings:text-rose-900 prose-p:text-rose-900 prose-li:text-rose-900 prose-strong:text-rose-900 prose-pre:bg-rose-100 prose-pre:text-rose-800">
+                <div className="prose prose-sm max-w-none prose-headings:text-blue-900 prose-p:text-blue-900 prose-li:text-blue-900 prose-strong:text-blue-900 prose-pre:bg-blue-100 prose-pre:text-blue-800">
                   <ReactMarkdown
                     components={{
                       // Wrap fenced code blocks in a card with copy control
@@ -416,7 +416,7 @@ export function MessageBubble({
                           lang === "plaintext"
                         ) {
                           return (
-                            <span className="inline-flex items-center rounded-[5px] bg-rose-50 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap">
+                            <span className="inline-flex items-center rounded-[5px] bg-blue-50 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap">
                               {content}
                             </span>
                           );
@@ -429,14 +429,14 @@ export function MessageBubble({
                         if (showCard) {
                           return (
                             <div
-                              className="group my-3 overflow-hidden rounded-lg border border-rose-200 bg-white/90"
+                              className="group my-3 overflow-hidden rounded-lg border border-blue-200 bg-white/90"
                               onClick={() =>
                                 navigator.clipboard.writeText(content)
                               }
                               role="button"
                               tabIndex={0}
                             >
-                              <div className="flex items-center justify-between bg-rose-50 px-3 py-1.5 text-xs text-rose-700">
+                              <div className="flex items-center justify-between bg-blue-50 px-3 py-1.5 text-xs text-blue-700">
                                 <span className="font-medium">
                                   {lang || "text"}
                                 </span>
@@ -453,7 +453,7 @@ export function MessageBubble({
 
                         // Fallback: plain code block without card/copy for other unknown languages
                         return (
-                          <pre className="my-3 overflow-auto p-3 text-[12px] leading-5 bg-rose-100 text-rose-800 rounded">
+                          <pre className="my-3 overflow-auto p-3 text-[12px] leading-5 bg-blue-100 text-blue-800 rounded">
                             <code className={className} {...props}>
                               {content}
                             </code>
@@ -491,16 +491,16 @@ export function MessageBubble({
             {message.role === "user" &&
               Array.isArray(message.attachments) &&
               message.attachments.length > 0 && (
-                <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-rose-900/90">
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-blue-900/90">
                   {message.attachments.map((att, idx) => (
                     <span
                       key={`${att.name}-${idx}`}
                       role="button"
                       tabIndex={0}
                       onClick={() => onPreviewAttachment(att)}
-                      className="inline-flex items-center gap-1 rounded-full border border-rose-200/60 bg-white/70 px-2.5 py-1 cursor-pointer hover:bg-white"
+                      className="inline-flex items-center gap-1 rounded-full border border-blue-200/60 bg-white/70 px-2.5 py-1 cursor-pointer hover:bg-white"
                     >
-                      <span className="text-rose-500">
+                      <span className="text-blue-500">
                         <IconPaperclip />
                       </span>
                       {att.name}

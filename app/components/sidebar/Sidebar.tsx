@@ -71,10 +71,10 @@ export function Sidebar({
 
   if (false && isCollapsed) {
     return (
-      <div className="fixed left-0 top-0 h-full w-12 bg-[#fdf7fd] border-r border-[#ee81ca]/20 z-40 flex flex-col">
+      <div className="fixed left-0 top-0 h-full w-12 bg-[#eff6ff] border-r border-[#93c5fd]/20 z-40 flex flex-col">
         <button
           onClick={onToggleCollapse}
-          className="p-3 text-[#ca0277] hover:bg-[#f5dbef]/50 transition-colors"
+          className="p-3 text-[#2563eb] hover:bg-[#eff6ff]/50 transition-colors"
           title="Expand sidebar"
         >
           <IconChevronRight />
@@ -82,7 +82,7 @@ export function Sidebar({
 
         <button
           onClick={onCreateThread}
-          className="mx-2 mt-2 p-2 rounded-lg bg-[#f5dbef] text-[#ca0277] hover:bg-[#f5dbef]/80 transition-colors"
+          className="mx-2 mt-2 p-2 rounded-lg bg-[#eff6ff] text-[#2563eb] hover:bg-[#eff6ff]/80 transition-colors"
           title="New chat"
         >
           <IconPlus />
@@ -103,7 +103,7 @@ export function Sidebar({
         aria-label={isPinned ? "Close sidebar" : "Open sidebar"}
         aria-pressed={isPinned}
         onClick={() => setIsPinned((v) => !v)}
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-[92] pointer-events-auto grid place-items-center rounded-full bg-white/80 backdrop-blur px-2.5 py-2 text-[#ca0277] shadow ring-1 ring-[#ee81ca]/50 hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ca0277]/30"
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-[92] pointer-events-auto grid place-items-center rounded-full bg-white/80 backdrop-blur px-2.5 py-2 text-[#2563eb] shadow ring-1 ring-[#93c5fd]/50 hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb]/30"
         title={isPinned ? "Close sidebar" : "Open sidebar"}
       >
         {isPinned ? <IconChevronLeft /> : <IconChevronRight />}
@@ -113,15 +113,15 @@ export function Sidebar({
 
       {/* Slide-in overlay panel */}
       <div
-        className={`absolute left-0 top-0 h-full w-80 bg-[#fdf7fd] border-r border-[#ee81ca]/20 z-[91] flex flex-col transform ${panelOpenClass} transition-transform duration-200 ease-out shadow-lg pointer-events-auto`}
+        className={`absolute left-0 top-0 h-full w-80 bg-[#eff6ff] border-r border-[#93c5fd]/20 z-[91] flex flex-col transform ${panelOpenClass} transition-transform duration-200 ease-out shadow-lg pointer-events-auto`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#ee81ca]/20">
-          <h2 className="text-lg font-semibold text-[#432A78]">Chats</h2>
+        <div className="flex items-center justify-between p-4 border-b border-[#93c5fd]/20">
+          <h2 className="text-lg font-semibold text-[#1e3a8a]">Chats</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={onCreateThread}
-              className="p-2 rounded-lg bg-[#f5dbef] text-[#ca0277] hover:bg-[#f5dbef]/80 transition-colors shadow-sm"
+              className="p-2 rounded-lg bg-[#eff6ff] text-[#2563eb] hover:bg-[#eff6ff]/80 transition-colors shadow-sm"
               title="New chat"
             >
               <IconPlus />
@@ -129,7 +129,7 @@ export function Sidebar({
             {isPinned && (
               <button
                 onClick={() => setIsPinned(false)}
-                className="p-2 text-[#6F4DA3] hover:bg-[#f5dbef]/50 rounded-lg transition-colors"
+                className="p-2 text-[#1d4ed8] hover:bg-[#eff6ff]/50 rounded-lg transition-colors"
                 title="Close sidebar"
                 aria-label="Close sidebar"
               >
@@ -140,13 +140,13 @@ export function Sidebar({
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-[#ee81ca]/20">
+        <div className="p-4 border-b border-[#93c5fd]/20">
           <input
             type="text"
             placeholder="Search chats..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 text-sm bg-white border border-[#ee81ca]/30 rounded-lg text-[#432A78] placeholder-[#6F4DA3]/60 focus:outline-none focus:ring-2 focus:ring-[#ca0277]/20 focus:border-[#ca0277]/40"
+            className="w-full px-3 py-2 text-sm bg-white border border-[#93c5fd]/30 rounded-lg text-[#1e3a8a] placeholder-[#1d4ed8]/60 focus:outline-none focus:ring-2 focus:ring-[#2563eb]/20 focus:border-[#2563eb]/40"
           />
         </div>
 
@@ -154,7 +154,7 @@ export function Sidebar({
         <div className="px-4 pt-3">
           <button
             onClick={onCreateThread}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-[#f5dbef] text-[#ca0277] hover:bg-[#f5dbef]/80 transition-colors shadow-sm"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-[#eff6ff] text-[#2563eb] hover:bg-[#eff6ff]/80 transition-colors shadow-sm"
           >
             <IconPlus />
             New Chat
@@ -166,11 +166,11 @@ export function Sidebar({
           {sortedThreads.length === 0 ? (
             <div className="text-center py-8">
               {searchQuery ? (
-                <div className="text-[#6F4DA3]/60 text-sm">
+                <div className="text-[#1d4ed8]/60 text-sm">
                   No chats found matching "{searchQuery}"
                 </div>
               ) : (
-                <div className="text-[#6F4DA3]/60 text-sm">
+                <div className="text-[#1d4ed8]/60 text-sm">
                   No chats yet. Start a new conversation!
                 </div>
               )}
@@ -190,8 +190,8 @@ export function Sidebar({
                 return (
                   <React.Fragment key={thread.id}>
                     {showHeader && (
-                      <div className="sticky top-0 z-10 -mt-1 mb-1 py-1 px-1 bg-[#fdf7fd]/90 backdrop-blur supports-[backdrop-filter]:bg-[#fdf7fd]/70">
-                        <div className="text-[10px] uppercase tracking-wide text-[#6F4DA3]/60 font-medium">
+                      <div className="sticky top-0 z-10 -mt-1 mb-1 py-1 px-1 bg-[#eff6ff]/90 backdrop-blur supports-[backdrop-filter]:bg-[#eff6ff]/70">
+                        <div className="text-[10px] uppercase tracking-wide text-[#2563eb]/60 font-medium">
                           {section}
                         </div>
                       </div>
@@ -212,8 +212,8 @@ export function Sidebar({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-[#ee81ca]/20">
-          <div className="text-xs text-[#6F4DA3]/60 text-center">
+        <div className="p-4 border-t border-[#93c5fd]/20">
+          <div className="text-xs text-[#1d4ed8]/60 text-center">
             {threads.length} chat{threads.length !== 1 ? "s" : ""}
           </div>
         </div>

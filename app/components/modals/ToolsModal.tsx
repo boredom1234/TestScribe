@@ -66,7 +66,7 @@ function ToolsModalContent({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#aa4673]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563eb]"></div>
       </div>
     );
   }
@@ -117,7 +117,7 @@ function ToolsModalContent({
                       type="checkbox"
                       checked={selectedTools.includes(tool.slug || tool.name)}
                       onChange={() => toggleTool(tool.slug || tool.name)}
-                      className="mt-1 text-[#aa4673] focus:ring-[#aa4673]"
+                      className="mt-1 text-[#2563eb] focus:ring-[#2563eb]"
                     />
                     <div className="flex-1">
                       <div className="font-medium text-sm text-gray-900">
@@ -157,7 +157,7 @@ export function ToolsModal({
       </button>
       <button
         onClick={onClose}
-        className="inline-flex items-center justify-center px-6 py-2 bg-[#aa4673] text-white rounded-lg hover:bg-[#aa4673]/90 transition leading-none"
+        className="inline-flex items-center justify-center px-6 py-2 bg-[#2563eb] text-white rounded-lg hover:bg-[#2563eb]/90 transition leading-none"
       >
         Done ({selectedTools.length} selected)
       </button>

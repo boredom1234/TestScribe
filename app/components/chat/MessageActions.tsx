@@ -18,7 +18,7 @@ export function MessageActions({
   const [copied, setCopied] = React.useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(message.content);
+  await navigator.clipboard.writeText(message.content);
     setCopied(true);
     onCopy();
     setTimeout(() => setCopied(false), 2000);
@@ -30,12 +30,12 @@ export function MessageActions({
   };
 
   return (
-    <div className="mt-3 flex items-center justify-between text-xs border-t border-rose-200/30 pt-2">
+    <div className="mt-3 flex items-center justify-between text-xs border-t border-blue-200/30 pt-2">
       <div className="flex items-center gap-1">
         <button
           onClick={handleCopy}
-          className="p-1.5 rounded-md hover:bg-rose-100/40 transition-colors hover:text-[#432A78]"
-          style={{ color: "#432A78" }}
+          className="p-1.5 rounded-md hover:bg-blue-100/40 transition-colors hover:text-[#1e3a8a]"
+          style={{ color: "#1e3a8a" }}
           title={copied ? "Copied!" : "Copy message"}
         >
           <IconCopy />
@@ -43,8 +43,8 @@ export function MessageActions({
 
         <button
           onClick={onBranchOff}
-          className="p-1.5 rounded-md hover:bg-rose-100/40 transition-colors hover:text-[#432A78]"
-          style={{ color: "#432A78" }}
+          className="p-1.5 rounded-md hover:bg-blue-100/40 transition-colors hover:text-[#1e3a8a]"
+          style={{ color: "#1e3a8a" }}
           title="Branch off to new conversation with different model"
         >
           <IconBranch />
@@ -52,8 +52,8 @@ export function MessageActions({
 
         <button
           onClick={onRetry}
-          className="p-1.5 rounded-md hover:bg-rose-100/40 transition-colors hover:text-[#432A78]"
-          style={{ color: "#432A78" }}
+          className="p-1.5 rounded-md hover:bg-blue-100/40 transition-colors hover:text-[#1e3a8a]"
+          style={{ color: "#1e3a8a" }}
           title="Retry message"
         >
           <IconRefresh />
@@ -62,7 +62,7 @@ export function MessageActions({
 
       <div
         className="flex items-center gap-3 font-medium"
-        style={{ color: "#432A78" }}
+        style={{ color: "#1e3a8a" }}
       >
         {message.model && <span className="text-xs">{message.model}</span>}
         {message.tokensPerSecond && (

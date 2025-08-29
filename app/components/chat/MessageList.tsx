@@ -45,7 +45,7 @@ export function MessageList({
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="flex items-center gap-1 rounded-2xl bg-[#fdf7fd] px-4 py-3">
+            <div className="flex items-center gap-1 rounded-2xl bg-[#eff6ff] px-4 py-3">
               <span className="typing-dot"></span>
               <span className="typing-dot"></span>
               <span className="typing-dot"></span>

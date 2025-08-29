@@ -33,7 +33,7 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
       onOpenToolsModal,
       onDomExtractPaste,
     }: ChatComposerProps,
-    ref,
+    ref
   ) {
     const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
     const [isFormatting, setIsFormatting] = React.useState(false);
@@ -88,7 +88,7 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
     const wrapSelection = (
       before: string,
       after: string,
-      placeholder: string,
+      placeholder: string
     ) => {
       const ta = textareaRef.current;
       if (!ta) return;
@@ -110,7 +110,7 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
           // Unwrap
           const inner = selected.slice(
             before.length,
-            selected.length - after.length,
+            selected.length - after.length
           );
           newValue = value.slice(0, start) + inner + value.slice(end);
           selStart = start;
@@ -197,7 +197,9 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
         if (obj && obj.dom_insp_extr_data_json === true) {
           // Intercept paste and turn into attachment
           e.preventDefault();
-          const filename = `dom_extract_${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+          const filename = `dom_extract_${new Date()
+            .toISOString()
+            .replace(/[:.]/g, "-")}.json`;
           const file = new File([JSON.stringify(obj)], filename, {
             type: "application/json",
           });
@@ -221,24 +223,24 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
                 onPaste={handlePaste}
                 ref={textareaRef}
                 placeholder="Type your message here..."
-                className="min-h-[68px] max-h-[240px] w-full resize-none rounded-l-2xl border border-transparent bg-[#FBF7FB] px-4 py-3 text-[#432A78] placeholder-[#6F4DA3] outline-none overflow-y-auto"
+                className="min-h-[68px] max-h-[240px] w-full resize-none rounded-xl border border-transparent bg-[#facff1a] px-4 py-3 text-[#1e3a8a] placeholder-[#60a5fa] outline-none overflow-y-auto"
               />
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-rose-700">
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-blue-700">
                 <ModelSelector
                   selectedModel={selectedModel}
                   onModelChange={onModelChange}
                 />
                 <button
                   onClick={onOpenToolsModal}
-                  className={`inline-flex items-center gap-1 rounded-full border border-rose-200/60 px-2.5 py-1 font-medium transition ${
+                  className={`inline-flex items-center gap-1 rounded-full border border-blue-200/60 px-2.5 py-1 font-medium transition ${
                     selectedTools.length > 0
-                      ? "bg-[#aa4673] text-white border-[#aa4673] hover:bg-[#aa4673]/90"
+                      ? "bg-[#2563eb] text-white border-[#2563eb] hover:bg-[#2563eb]/90"
                       : "bg-white/70 hover:bg-white"
                   }`}
                 >
                   <span
                     className={
-                      selectedTools.length > 0 ? "text-white" : "text-rose-500"
+                      selectedTools.length > 0 ? "text-white" : "text-blue-500"
                     }
                   >
                     <IconTools />
@@ -259,10 +261,10 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
                 onClick={handleImprovePrompt}
                 disabled={isFormatting}
                 aria-busy={isFormatting}
-                className={`grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-b from-rose-800 to-pink-800 text-white shadow-md transition ${
+                className={`grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-b from-blue-800 to-blue-600 text-white shadow-md transition ${
                   isFormatting
                     ? "opacity-70 cursor-not-allowed"
-                    : "hover:from-rose-600 hover:to-pink-600"
+                    : "hover:from-blue-700 hover:to-blue-500"
                 }`}
                 title={
                   isFormatting ? "Formatting…" : "Improve prompt formatting"
@@ -289,7 +291,7 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
             <button
               aria-label="Send"
               onClick={() => onSendMessage(input)}
-              className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-b from-rose-800 to-pink-800 text-white shadow-md transition hover:from-rose-600 hover:to-pink-600"
+              className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-b from-blue-800 to-blue-600 text-white shadow-md transition hover:from-blue-700 hover:to-blue-500"
             >
               <IconArrowUp />
             </button>
@@ -297,5 +299,5 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
         </div>
       </section>
     );
-  },
+  }
 );

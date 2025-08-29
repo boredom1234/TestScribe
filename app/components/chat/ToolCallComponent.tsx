@@ -49,10 +49,10 @@ export function ToolCallComponent({
   }, [toolCall.toolName]);
 
   return (
-    <div className="my-3 w-full rounded-2xl border border-rose-200/70 bg-[#f5dbef] p-4 shadow-sm">
+    <div className="my-3 w-full rounded-2xl border border-blue-200/70 bg-[#eff6ff] p-4 shadow-sm">
       <div className="flex items-center justify-between gap-4 min-h-[72px]">
         <div className="flex items-center gap-3">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-white/80 text-[#ca0277] shadow-sm overflow-hidden">
+          <div className="grid h-8 w-8 place-items-center rounded-lg bg-white/80 text-[#2563eb] shadow-sm overflow-hidden">
             {logoUrl ? (
               <img
                 src={logoUrl}
@@ -66,17 +66,17 @@ export function ToolCallComponent({
             )}
           </div>
           <div>
-            <div className="font-semibold text-[#ca0277]">
+            <div className="font-semibold text-[#1e3a8a]">
               {getToolDisplayName(toolCall.toolName)}
             </div>
-            <div className="text-xs text-[#6F4DA3]">
+            <div className="text-xs text-[#1d4ed8]">
               {toolResult ? "✅ Completed" : "⏳ Running..."}
             </div>
           </div>
         </div>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-[#ca0277] hover:text-[#ca0277]/80 text-sm font-medium underline-offset-2 hover:underline"
+          className="text-[#2563eb] hover:text-[#2563eb]/80 text-sm font-medium underline-offset-2 hover:underline"
         >
           {isExpanded ? "Hide details" : "Show details"}
         </button>
@@ -85,20 +85,20 @@ export function ToolCallComponent({
       {isExpanded && (
         <div className="mt-4 space-y-3">
           <div>
-            <div className="mb-1 text-xs font-medium text-[#6F4DA3]">
+            <div className="mb-1 text-xs font-medium text-[#1d4ed8]">
               Input:
             </div>
-            <div className="rounded-lg border border-white/70 bg-white/60 p-2 font-mono text-xs text-[#432A78]">
+            <div className="rounded-lg border border-white/70 bg-white/60 p-2 font-mono text-xs text-[#1e3a8a]">
               {JSON.stringify(toolCall.args, null, 2)}
             </div>
           </div>
 
           {toolResult && (
             <div>
-              <div className="mb-1 text-xs font-medium text-[#6F4DA3]">
+              <div className="mb-1 text-xs font-medium text-[#1d4ed8]">
                 Output:
               </div>
-              <div className="max-h-40 overflow-y-auto rounded-lg border border-white/70 bg-white/60 p-2 font-mono text-xs text-[#432A78]">
+              <div className="max-h-40 overflow-y-auto rounded-lg border border-white/70 bg-white/60 p-2 font-mono text-xs text-[#1e3a8a]">
                 {JSON.stringify(toolResult.result, null, 2)}
               </div>
             </div>
