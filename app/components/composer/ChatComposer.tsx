@@ -67,10 +67,19 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
       if (!text || isFormatting) return;
       setIsFormatting(true);
       try {
+        const prePrompt = [
+          "STRICT FORMATTER MODE:",
+          "- Only rewrite the user's text for clarity and structure.",
+          "- Do NOT add new information, assumptions, or examples.",
+          "- Do NOT answer the prompt or provide commentary.",
+          "- Preserve the user's intent and technical details.",
+          "- Output ONLY the improved prompt text (no preamble/explanation).",
+        ].join("\n");
+
         const res = await fetch("/api/format", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ text: input, model: selectedModel }),
+          body: JSON.stringify({ text: input, model: selectedModel, prePrompt }),
         });
         const data = await res.json().catch(() => ({ text: "" }));
         const newText = typeof data?.text === "string" ? data.text : "";
@@ -156,6 +165,8 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         onSendMessage(input);
+        // Clear input
+        onInputChange("");
         return;
       }
 

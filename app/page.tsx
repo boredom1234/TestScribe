@@ -63,6 +63,9 @@ export default function Home() {
   const [input, setInput] = React.useState("");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
   const [composerHeight, setComposerHeight] = React.useState<number>(160);
+  const [animatedTokens, setAnimatedTokens] = React.useState(0);
+  const animRef = React.useRef<number | null>(null);
+  const displayedRef = React.useRef(0);
 
   const composerRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -150,6 +153,35 @@ export default function Home() {
       ro?.disconnect();
     };
   }, []);
+
+  // Animate token counter when totalThreadTokens changes
+  React.useEffect(() => {
+    const to = totalThreadTokens ?? 0;
+    const from = displayedRef.current;
+    const duration = 600; // ms
+    const start = performance.now();
+
+    if (animRef.current) cancelAnimationFrame(animRef.current);
+
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+      const val = from + (to - from) * eased;
+      displayedRef.current = val;
+      setAnimatedTokens(val);
+      if (t < 1) {
+        animRef.current = requestAnimationFrame(step);
+      } else {
+        animRef.current = null;
+      }
+    };
+
+    animRef.current = requestAnimationFrame(step);
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+      animRef.current = null;
+    };
+  }, [totalThreadTokens]);
 
   const showWelcome = (activeThread?.messages.length ?? 0) === 0;
   const attachedCount = activeThread?.attachedContexts?.length ?? 0;
@@ -508,7 +540,7 @@ export default function Home() {
       {activeThread && activeThread.messages.length > 0 && totalThreadTokens > 0 && (
         <div className="fixed bottom-3 right-3 z-40">
           <div className="rounded-full bg-white/90 border border-blue-200 px-3 py-1 text-xs font-medium text-[#1e3a8a] shadow-sm">
-            {totalThreadTokens} total token count
+            <span className="font-mono">{Math.round(animatedTokens)}</span> total token count
           </div>
         </div>
       )}

@@ -39,8 +39,11 @@ function resolveModel(selected?: string) {
 
 export async function POST(req: Request) {
   try {
-    const { text, model: selectedModel }: { text?: string; model?: string } =
-      await req.json();
+    const {
+      text,
+      model: selectedModel,
+      prePrompt,
+    }: { text?: string; model?: string; prePrompt?: string } = await req.json();
     const toFormat = (text ?? "").trim();
     if (!toFormat) {
       return Response.json({ text: "" });
@@ -48,7 +51,7 @@ export async function POST(req: Request) {
 
     const model = resolveModel(selectedModel);
 
-    const systemPrompt = [
+    const systemPromptParts = [
       "You are a prompt formatter.",
       "Rewrite the user's input into a clear, concise, well-structured prompt.",
       "- Preserve technical details and intent.",
@@ -56,7 +59,11 @@ export async function POST(req: Request) {
       "- Use bullet points, sections, and code fences where useful.",
       "- Avoid adding assumptions.",
       "Return ONLY the improved prompt text without any preamble or explanation.",
-    ].join("\n");
+    ];
+    if ((prePrompt ?? "").trim()) {
+      systemPromptParts.push((prePrompt as string).trim());
+    }
+    const systemPrompt = systemPromptParts.join("\n");
 
     const result = streamText({
       model,

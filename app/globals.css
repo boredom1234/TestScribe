@@ -38,11 +38,11 @@
   --color-heading: 215 65% 22%;
   --chat-border: 210 40% 88%;
   --chat-background: 210 60% 98%;
-  --chat-accent: #EAF3FF;
+  --chat-accent: #eaf3ff;
   --chat-input-gradient: 210 100% 90%;
   --chat-input-background: hsla(210, 100%, 99%, var(--blur-fallback, 0.1));
   --chat-overlay: hsla(210, 60%, 96%, var(--blur-fallback, 0.72));
-  --wordmark-color: #0055CC;
+  --wordmark-color: #0055cc;
 
   /* Extra tokens for gradient border utility */
   --c: 215 100% 50%;
@@ -103,16 +103,13 @@ textarea {
 button,
 [role="button"] {
   cursor: pointer;
-  /* bold looking */
   font-weight: 500;
-
-  /* 3d effect */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 button:hover {
   filter: brightness(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Checkbox */
@@ -224,11 +221,28 @@ input[type="checkbox"] {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--secondary));
+  background: hsl(var(--primary));
   border-radius: 9999px;
   cursor: grab;
 }
 
 ::-webkit-scrollbar-thumb:active {
   cursor: grabbing;
+}
+
+/* Chat markdown fine-tuning */
+.chat-markdown p {
+  white-space: normal;
+  margin-top: 0; /* add space above */
+  margin-bottom: 0; /* no space below */
+  line-height: 3.4; /* keep text readable */
+}
+
+.chat-markdown :not(pre) code {
+  vertical-align: baseline;
+  margin-left: 0; /* no artificial spacing around inline code */
+  margin-right: 0;
+}
+.chat-markdown pre code {
+  white-space: pre-wrap; /* allow wrapping in code cards */
 }

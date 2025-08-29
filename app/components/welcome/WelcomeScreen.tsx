@@ -66,16 +66,16 @@ export function WelcomeScreen({
   ];
 
   return (
-    <section className="mx-auto mt-8 w-full max-w-6xl text-left rounded-2xl border border-[#bfdbfe] bg-white/70 p-4 sm:p-6 shadow-sm">
-      <h1 className="text-2xl font-semibold tracking-tight sm:text-[30px] pb-3 pt-12 text-[#1e3a8a]">
+    <section className="mx-auto mt-4 w-full max-w-4xl text-left rounded-xl border border-[#bfdbfe] bg-white/70 p-3 sm:p-4 shadow-sm">
+      <h1 className="text-xl font-semibold tracking-tight sm:text-2xl pb-2 pt-6 text-[#1e3a8a]">
         Welcome to TestScribe
       </h1>
-      <p className="text-sm text-blue-900/80 mb-4">
+      <p className="text-sm text-blue-900/80 mb-3">
         Pick your framework or attach context, then describe what to test.
       </p>
 
       {/* Framework toggles (mirror top-right menu) */}
-      <div className="mb-4 rounded-xl border border-[#bfdbfe] bg-white p-3">
+      <div className="mb-3 rounded-lg border border-[#bfdbfe] bg-white p-2">
         <div className="mb-2 text-sm font-semibold text-[#1e3a8a]">
           Framework Contexts{" "}
           <small>
@@ -148,7 +148,7 @@ export function WelcomeScreen({
           <button
             key={label}
             onClick={() => onSuggestionClick(prompt)}
-            className="rounded-lg border border-[#bfdbfe] bg-white px-4 py-3 text-left text-blue-900/90 transition hover:bg-[#93c5fd]/10"
+            className="rounded-lg border border-[#bfdbfe] bg-white px-3 py-2 text-left text-blue-900/90 transition hover:bg-[#93c5fd]/10"
           >
             {label}
           </button>
@@ -156,12 +156,12 @@ export function WelcomeScreen({
       </div>
 
       {!hasMessages && (
-        <div className=" mt-5 w-full divide-y divide-blue-100 overflow-hidden rounded-2xl text-left pt-1 align-left">
+        <div className=" mt-4 w-full divide-y divide-blue-100 overflow-hidden rounded-2xl text-left pt-1 align-left">
           {starters.map((prompt) => (
             <button
               key={prompt}
               onClick={() => onSuggestionClick(prompt)}
-              className="block w-full px-5 py-3 text-left text-blue-900/90 transition hover:bg-[#93c5fd]/20 text-font-10px align-left"
+              className="block w-full px-4 py-2 text-left text-blue-900/90 transition hover:bg-[#93c5fd]/20 text-font-10px align-left"
             >
               {prompt}
             </button>

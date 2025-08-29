@@ -1,5 +1,7 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import { ChatMessage, AttachmentMeta } from "../../types/chat";
 import { MessageActions } from "./MessageActions";
 import { ToolCallComponent } from "./ToolCallComponent";
@@ -336,7 +338,7 @@ export function MessageBubble({
     <div
       className={`flex ${
         message.role === "user" ? "justify-end" : "justify-start"
-      }`}
+      } mb-4 md:mb-5`}
     >
       <div
         className={`max-w-[100%] ${
@@ -371,11 +373,12 @@ export function MessageBubble({
                 message.role === "user"
                   ? "bg-[#eff6ff] text-[#1e3a8a]"
                   : "bg-[#f8fbff] text-blue-900"
-              } whitespace-pre-wrap rounded-2xl px-4 py-3`}
+              } ${message.role === "user" ? "whitespace-pre-wrap" : "whitespace-normal"} rounded-2xl px-4 py-3`}
             >
               {message.role === "assistant" ? (
-                <div className="prose prose-sm max-w-none prose-headings:text-blue-900 prose-p:text-blue-900 prose-li:text-blue-900 prose-strong:text-blue-900 prose-pre:bg-blue-100 prose-pre:text-blue-800">
+                <div className="prose chat-markdown max-w-none whitespace-normal leading-7 space-y-3 prose-headings:text-blue-900 prose-p:text-blue-900 prose-li:text-blue-900 prose-strong:text-blue-900 prose-pre:bg-blue-100 prose-pre:text-blue-800 prose-headings:mt-4 prose-headings:mb-1 prose-p:my-0 prose-li:my-1 prose-ul:my-0 prose-ol:my-0 prose-ul:pl-5 prose-ol:pl-5 prose-pre:my-3 prose-code:before:content-none prose-code:after:content-none prose-code:px-0 prose-code:py-0 prose-code:mr-0 prose-code:ml-0 prose-code:bg-blue-50 prose-code:rounded">
                   <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkBreaks]}
                     components={{
                       // Wrap fenced code blocks in a card with copy control
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -399,7 +402,7 @@ export function MessageBubble({
                         if (inline) {
                           return (
                             <code
-                              className={`text-[#7b3f00] ${className || ""}`}
+                              className={`text-[#7b3f00] whitespace-normal ${className || ""}`}
                               {...props}
                             >
                               {children}
@@ -429,7 +432,7 @@ export function MessageBubble({
                         if (showCard) {
                           return (
                             <div
-                              className="group my-3 overflow-hidden rounded-lg border border-blue-200 bg-white/90"
+                              className="group my-2 overflow-hidden rounded-lg border border-blue-200 bg-white/90"
                               onClick={() =>
                                 navigator.clipboard.writeText(content)
                               }
@@ -453,7 +456,7 @@ export function MessageBubble({
 
                         // Fallback: plain code block without card/copy for other unknown languages
                         return (
-                          <pre className="my-3 overflow-auto p-3 text-[12px] leading-5 bg-blue-100 text-blue-800 rounded">
+                          <pre className="my-2 overflow-auto p-3 text-[12px] leading-5 bg-blue-100 text-blue-800 rounded">
                             <code className={className} {...props}>
                               {content}
                             </code>
