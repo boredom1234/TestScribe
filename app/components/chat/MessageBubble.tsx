@@ -5,7 +5,7 @@ import remarkBreaks from "remark-breaks";
 import { ChatMessage, AttachmentMeta } from "../../types/chat";
 import { MessageActions } from "./MessageActions";
 import { ToolCallComponent } from "./ToolCallComponent";
-import { IconPaperclip, IconCopy, IconCheck } from "../ui/icons";
+import { IconPaperclip, IconCopy, IconCheck, IconEdit } from "../ui/icons";
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -13,6 +13,7 @@ interface MessageBubbleProps {
   onBranchOff: (message: ChatMessage) => void;
   onRetry: (message: ChatMessage) => void;
   onPreviewAttachment: (att: AttachmentMeta) => void;
+  onEditUser: (message: ChatMessage, newText: string) => void;
 }
 
 // Languages that should render with the code "card" UI (with copy controls)
@@ -333,7 +334,43 @@ export function MessageBubble({
   onBranchOff,
   onRetry,
   onPreviewAttachment,
+  onEditUser,
 }: MessageBubbleProps) {
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editText, setEditText] = React.useState(message.content || "");
+
+  React.useEffect(() => {
+    // keep local copy in sync if message changes
+    setEditText(message.content || "");
+  }, [message.id, message.content]);
+
+  const startEditing = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditText(message.content || "");
+    setIsEditing(true);
+  };
+
+  const cancelEditing = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setIsEditing(false);
+    setEditText(message.content || "");
+  };
+
+  const submitEditing = async (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const next = (editText || "").trim();
+    if (!next) return; // ignore empty edits
+    setIsEditing(false);
+    onEditUser(message, next);
+  };
+
+  const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (ev) => {
+    if ((ev.metaKey || ev.ctrlKey) && ev.key === "Enter") {
+      submitEditing();
+    } else if (ev.key === "Escape") {
+      cancelEditing();
+    }
+  };
   return (
     <div
       className={`flex ${
@@ -373,7 +410,7 @@ export function MessageBubble({
                 message.role === "user"
                   ? "bg-[#eff6ff] text-[#1e3a8a]"
                   : "bg-[#f8fbff] text-blue-900"
-              } ${message.role === "user" ? "whitespace-pre-wrap" : "whitespace-normal"} rounded-2xl px-4 py-3`}
+              } ${message.role === "user" ? "whitespace-pre-wrap" : "whitespace-normal"} rounded-2xl px-4 py-3 relative group`}
             >
               {message.role === "assistant" ? (
                 <div className="prose chat-markdown max-w-none whitespace-normal leading-7 space-y-3 prose-headings:text-blue-900 prose-p:text-blue-900 prose-li:text-blue-900 prose-strong:text-blue-900 prose-pre:bg-blue-100 prose-pre:text-blue-800 prose-headings:mt-4 prose-headings:mb-1 prose-p:my-0 prose-li:my-1 prose-ul:my-0 prose-ol:my-0 prose-ul:pl-5 prose-ol:pl-5 prose-pre:my-3 prose-code:before:content-none prose-code:after:content-none prose-code:px-0 prose-code:py-0 prose-code:mr-0 prose-code:ml-0 prose-code:bg-blue-50 prose-code:rounded">
@@ -485,6 +522,53 @@ export function MessageBubble({
                     {message.content}
                   </ReactMarkdown>
                 </div>
+              ) : message.role === "user" ? (
+                isEditing ? (
+                  <div>
+                    <textarea
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      onKeyDown={onKeyDown}
+                      autoFocus
+                      rows={Math.min(12, Math.max(3, Math.ceil((editText.length || 1) / 60)))}
+                      className="w-full resize-y rounded-lg border border-blue-200 bg-white/90 px-3 py-2 text-sm text-blue-900 outline-none focus:border-blue-400"
+                      placeholder="Edit your message"
+                    />
+                    <div className="mt-2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={submitEditing}
+                        disabled={!editText.trim()}
+                        className="inline-flex items-center gap-1 rounded-md bg-[#2563eb] px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+                      >
+                        <span className="text-white"><IconCheck /></span>
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={cancelEditing}
+                        className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-white px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-50"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Normal user message text */}
+                    {message.content}
+                    {/* Edit button on hover */}
+                    <button
+                      type="button"
+                      onClick={startEditing}
+                      title="Edit message"
+                      className="absolute right-1 top-1 hidden items-center gap-1 rounded-md border border-blue-200 bg-white/90 px-2 py-1 text-[10px] text-blue-700 shadow-sm hover:bg-white group-hover:flex"
+                    >
+                      <span className="text-blue-600"><IconEdit /></span>
+                      Edit
+                    </button>
+                  </>
+                )
               ) : (
                 message.content
               )}

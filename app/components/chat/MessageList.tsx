@@ -10,6 +10,7 @@ interface MessageListProps {
   onBranchOff: (message: ChatMessage) => void;
   onRetry: (message: ChatMessage) => void;
   onPreviewAttachment: (att: AttachmentMeta) => void;
+  onEditUser: (message: ChatMessage, newText: string) => void;
 }
 
 export function MessageList({
@@ -20,6 +21,7 @@ export function MessageList({
   onBranchOff,
   onRetry,
   onPreviewAttachment,
+  onEditUser,
 }: MessageListProps) {
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -41,6 +43,7 @@ export function MessageList({
             onBranchOff={onBranchOff}
             onRetry={onRetry}
             onPreviewAttachment={onPreviewAttachment}
+            onEditUser={onEditUser}
           />
         ))}
         {isLoading && (

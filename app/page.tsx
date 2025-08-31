@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AttachmentMeta, FrameworkContextKey } from "./types/chat";
+import { AttachmentMeta, FrameworkContextKey, ChatMessage } from "./types/chat";
 import { Sidebar } from "./components/sidebar/Sidebar";
 import { MobileSidebar } from "./components/sidebar/MobileSidebar";
 import { WelcomeScreen } from "./components/welcome/WelcomeScreen";
@@ -9,7 +9,7 @@ import { MessageList } from "./components/chat/MessageList";
 import { ChatComposer } from "./components/composer/ChatComposer";
 import { ToolsModal } from "./components/modals/ToolsModal";
 import { AttachmentPreviewModal } from "./components/modals/AttachmentPreviewModal";
-import { IconHamburger } from "./components/ui/icons";
+import { IconArrowUp, IconHamburger } from "./components/ui/icons";
 import { IconCircleFadingPlus } from "./components/ui/icons/IconCircleFadingPlus";
 import { IconClose } from "./components/ui/icons/IconClose";
 import { useChat } from "./hooks/useChat";
@@ -33,6 +33,7 @@ export default function Home() {
     renameThread,
     branchOff,
     retryMessage,
+    editUserMessage,
     totalThreadTokens,
     markContextsAttached,
     isContextAttached,
@@ -68,6 +69,7 @@ export default function Home() {
   const displayedRef = React.useRef(0);
 
   const composerRef = React.useRef<HTMLDivElement | null>(null);
+  const [showScrollToBottom, setShowScrollToBottom] = React.useState(false);
 
   // External context selection and data store
   const [isContextMenuOpen, setIsContextMenuOpen] = React.useState(false);
@@ -93,6 +95,12 @@ export default function Home() {
     } catch (e) {
       setContextData((prev) => ({ ...prev, [key]: "" }));
     }
+  };
+
+  const handleEditUserMessage = (message: ChatMessage, newText: string) => {
+    // For edits, we reuse the original message attachments inside useChat.editUserMessage
+    // and only need to forward the selected tools.
+    editUserMessage(message, newText, selectedTools);
   };
 
   const handleToggleContext = async (
@@ -154,6 +162,25 @@ export default function Home() {
     };
   }, []);
 
+  // Show a floating "scroll to bottom" button when far from bottom
+  React.useEffect(() => {
+    function updateVisibility() {
+      const doc = document.documentElement;
+      const distanceFromBottom =
+        doc.scrollHeight - (window.scrollY + window.innerHeight);
+      // Show if more than a threshold away from bottom; consider composer height
+      const threshold = Math.max(200, composerHeight);
+      setShowScrollToBottom(distanceFromBottom > threshold);
+    }
+    window.addEventListener("scroll", updateVisibility, { passive: true });
+    window.addEventListener("resize", updateVisibility);
+    updateVisibility();
+    return () => {
+      window.removeEventListener("scroll", updateVisibility as any);
+      window.removeEventListener("resize", updateVisibility as any);
+    };
+  }, [composerHeight]);
+
   // Animate token counter when totalThreadTokens changes
   React.useEffect(() => {
     const to = totalThreadTokens ?? 0;
@@ -185,6 +212,34 @@ export default function Home() {
 
   const showWelcome = (activeThread?.messages.length ?? 0) === 0;
   const attachedCount = activeThread?.attachedContexts?.length ?? 0;
+  // Token severity visualization (0..1,000,000 split in ~90,909 steps)
+  const tokenCount = totalThreadTokens ?? 0;
+  const tokenLevel = Math.min(11, Math.floor(tokenCount / 90909));
+  const levelInfo = [
+    { emoji: "🟢", label: "Green" },
+    { emoji: "🟡", label: "Greenish-Yellow" },
+    { emoji: "🟡", label: "Yellow-Green" },
+    { emoji: "🟡", label: "Yellow" },
+    { emoji: "🟠", label: "Yellow-Orange" },
+    { emoji: "🟠", label: "Orange" },
+    { emoji: "🟠", label: "Reddish-Orange" },
+    { emoji: "🔴", label: "Orange-Red" },
+    { emoji: "🔴", label: "Red" },
+    { emoji: "🔴", label: "Darker Red" },
+    { emoji: "🔴", label: "Deep Red" },
+    { emoji: "⚫", label: "Maroon/Very Dark Red" },
+  ] as const;
+  const levelLabel = levelInfo[tokenLevel].label;
+  const chipColors =
+    tokenLevel === 0
+      ? { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-800" }
+      : tokenLevel <= 3
+        ? { bg: "bg-yellow-50", border: "border-yellow-200", text: "text-yellow-800" }
+        : tokenLevel <= 6
+          ? { bg: "bg-orange-50", border: "border-orange-200", text: "text-orange-800" }
+          : tokenLevel <= 10
+            ? { bg: "bg-red-50", border: "border-red-200", text: "text-red-800" }
+            : { bg: "bg-red-100", border: "border-red-300", text: "text-red-900" };
 
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
@@ -346,6 +401,11 @@ export default function Home() {
     setIsMobileSidebarOpen(!isMobileSidebarOpen);
   };
 
+  const scrollToBottom = () => {
+    const doc = document.documentElement;
+    window.scrollTo({ top: doc.scrollHeight, behavior: "smooth" });
+  };
+
   return (
     <div className="font-sans min-h-screen w-full bg-[#f8fbff]">
       {/* Sidebar */}
@@ -499,6 +559,7 @@ export default function Home() {
               onBranchOff={branchOff}
               onRetry={handleRetryMessage}
               onPreviewAttachment={handlePreviewAttachment}
+              onEditUser={handleEditUserMessage}
             />
           )}
 
@@ -539,9 +600,31 @@ export default function Home() {
       {/* Thread Token Counter - bottom right */}
       {activeThread && activeThread.messages.length > 0 && totalThreadTokens > 0 && (
         <div className="fixed bottom-3 right-3 z-40">
-          <div className="rounded-full bg-white/90 border border-blue-200 px-3 py-1 text-xs font-medium text-[#1e3a8a] shadow-sm">
-            <span className="font-mono">{Math.round(animatedTokens)}</span> total token count
+          <div
+            className={`rounded-lg ${chipColors.bg} border ${chipColors.border} px-3 py-2 text-xs font-medium ${chipColors.text} shadow-sm w-[max-content]`}
+            title={`${levelLabel} level`}
+          >
+            <div className="flex items-center gap-2">
+              <span className="font-mono">{Math.round(animatedTokens).toLocaleString()}</span>
+              <span>total token count</span>
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* Scroll to Bottom Button - bottom right */}
+      {!showWelcome && !!(activeThread && activeThread.messages.length > 0) && showScrollToBottom && (
+        <div className={`fixed ${!!(activeThread && activeThread.messages.length > 0 && totalThreadTokens > 0) ? "bottom-14" : "bottom-3"} right-3 z-50`}>
+          <button
+            aria-label="Scroll to bottom"
+            onClick={scrollToBottom}
+            className="grid h-9 w-9 place-items-center rounded-full bg-[#dbeafe] text-[#1e3a8a] border border-blue-200 shadow-sm hover:brightness-95"
+            title="Go to latest message"
+          >
+            <span className="block rotate-180">
+              <IconArrowUp />
+            </span>
+          </button>
         </div>
       )}
     </div>
