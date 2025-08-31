@@ -20,7 +20,7 @@ export async function GET(req: Request) {
 
     const res = await fetch(target, {
       // Optionally set a UA; some hosts block default fetch UA
-      headers: { "user-agent": "t3chat-composio/1.0" },
+      headers: { "user-agent": "testscribe/1.0" },
       // Disable Next's fetch caching for now to ensure freshness
       cache: "no-store",
     });

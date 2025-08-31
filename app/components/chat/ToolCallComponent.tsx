@@ -30,7 +30,7 @@ export function ToolCallComponent({
 
   React.useEffect(() => {
     try {
-      const raw = localStorage.getItem("t3chat:toolkits");
+      const raw = localStorage.getItem("testscribe:toolkits");
       if (!raw) return;
       const items = JSON.parse(raw) as Array<{
         slug: string;

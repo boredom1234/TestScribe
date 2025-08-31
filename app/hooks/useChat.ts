@@ -3,10 +3,10 @@ import { ChatMessage, Thread, FrameworkContextKey } from "../types/chat";
 import { useLocalStorage } from "./useLocalStorage";
 
 export function useChat() {
-  const STORAGE_THREADS = "t3chat:threads";
-  const STORAGE_ACTIVE = "t3chat:activeThreadId";
-  const STORAGE_MODEL = "t3chat:selectedModel";
-  const STORAGE_SIDEBAR = "t3chat:sidebarCollapsed";
+  const STORAGE_THREADS = "testscribe:threads";
+  const STORAGE_ACTIVE = "testscribe:activeThreadId";
+  const STORAGE_MODEL = "testscribe:selectedModel";
+  const STORAGE_SIDEBAR = "testscribe:sidebarCollapsed";
 
   // Initialize with empty array to avoid SSR/CSR mismatches
   const [threads, setThreads, threadsHydrated] = useLocalStorage<Thread[]>(

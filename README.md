@@ -1,17 +1,18 @@
-# T3Chat Composio
+# testscribe
 
 A powerful AI chat interface built with Next.js that integrates multiple AI providers with Composio tools for enhanced functionality.
 
 ## Features
 
-- **Multi-AI Provider Support**: Connect to OpenAI, Anthropic, Google Gemini, and Groq models
-- **Tool Integration**: Seamlessly use external tools via Composio platform
-- **Streaming Responses**: Real-time chat experience with streaming
-- **Modern UI**: Clean, responsive interface built with TailwindCSS
-- **Model Selection**: Choose from the latest AI models across providers
-- **Tool Selection**: Pick and configure tools for enhanced AI capabilities
-- **File Attachments**: Support for file uploads and attachments
-- **Message History**: Persistent chat threads with local storage
+- **Test generation**: Generate runnable tests for Playwright (TypeScript), Cypress, and Selenium.
+- **DOM JSON ingestion**: Attach DOM inspection JSON marked with "dom_insp_extr_data_json": true. The data is persisted in the conversation and automatically injected into model context by `app/api/chat/route.ts`.
+- **Framework contexts**: Attach Playwright/Selenium/Cypress reference packs via the top-right Framework Contexts menu (fetched from Context7). Per-thread attachment with badge indicator.
+- **Composio tools**: Select tools in the Tools modal to enable agentic actions. Tool calls and results stream into the UI; responses are synthesized after tool execution.
+- **Multi-model support**: OpenAI, Anthropic, Google Gemini, Groq.
+- **Streaming responses**: Low-latency, incremental output.
+- **Modern UI**: Sidebar threads, branching, in-place user edit and retry, token counter chip, scroll-to-bottom.
+- **Attachments & preview**: Upload files; JSON is pretty-printed in previews.
+- **Persistent history**: Threads and settings saved to localStorage.
 
 ## Quick Start
 
@@ -28,7 +29,7 @@ A powerful AI chat interface built with Next.js that integrates multiple AI prov
 
 ```bash
 git clone <repository-url>
-cd t3chat-composio
+cd <project-folder>
 ```
 
 2. Install dependencies:
@@ -38,13 +39,9 @@ npm install
 ```
 
 3. Set up environment variables:
-
-```bash
-cp .env.example .env.local
-```
-
-Edit `.env.local` with your API keys:
-
+ 
+ Create a `.env.local` file in the project root and add:
+ 
 ```bash
 # AI Provider API Keys (at least one required)
 OPENAI_API_KEY=your_openai_key
@@ -64,6 +61,14 @@ npm run dev
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### Using TestScribe
+
+- **Choose a model**: Use the model selector in the composer.
+- **Attach framework contexts (optional)**: Click the plus icon at top-right and select Playwright, Selenium, or Cypress to fetch docs from Context7 for grounding.
+- **Attach DOM JSON (optional but recommended)**: Click the paperclip to upload your DOM extraction JSON. It must include `"dom_insp_extr_data_json": true`.
+- **Pick tools (optional)**: Open the Tools modal and select Composio tools if the task needs external actions.
+- **Describe your test**: For example, "Generate Playwright tests that fill and submit the customer form and assert server validation."
+
 ## Available Scripts
 
 - `npm run dev` - Start development server
@@ -76,8 +81,9 @@ npm run dev
 Built with modern technologies:
 
 - **Frontend**: Next.js 15, React 19, TailwindCSS
-- **AI Integration**: AI SDK with multiple provider support
+- **AI Integration**: Vercel AI SDK with multi-provider support
 - **Tools Platform**: Composio for external service integrations
+- **Context fetcher**: Context7-backed API for Playwright/Selenium/Cypress reference packs
 - **Styling**: TailwindCSS with custom design system
 - **Type Safety**: TypeScript throughout
 
@@ -106,7 +112,15 @@ Built with modern technologies:
 
 ## Tool Integration
 
-The application integrates with Composio to provide access to hundreds of tools and services. Select tools through the intuitive tool selection modal to enhance your AI conversations.
+TestScribe integrates with Composio to enable tool-augmented agents.
+- Select tools in the Tools modal. When enabled, tool calls and results are streamed to the UI. After tools finish, a second LLM pass synthesizes the final answer based on results.
+- Set `COMPOSIO_API_KEY` in your environment. If no key or tools are selected, the app falls back to plain model chatting.
+
+## API Routes
+
+- `app/api/chat/route.ts`: Streams model output. When attachments include DOM JSON or external framework contexts, they are injected as dedicated user messages at the top of the conversation. Handles Composio tools with two-phase streaming.
+- `app/api/context/route.ts`: Fetches framework reference text from Context7 (Playwright/Selenium/Cypress).
+- `app/api/format/route.ts`: Utility endpoint that rewrites a prompt into a cleaner structure using the selected model.
 
 ## Contributing
 
@@ -127,6 +141,7 @@ MIT License - see LICENSE file for details.
 - [Composio Platform](https://composio.dev) - Tools and integrations platform
 - [Composio Documentation](https://docs.composio.dev) - Complete integration guides
 - [Composio GitHub](https://github.com/composiohq/composio) - Open source repository
+- [Context7](https://context7.com) - High-signal framework docs for LLM grounding
 
 ### AI Providers
 
