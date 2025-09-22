@@ -7,7 +7,8 @@ export async function GET(req: Request) {
     const category = searchParams.get("category");
     const limit = searchParams.get("limit") || "20";
 
-    const apiKey = process.env.COMPOSIO_API_KEY;
+    const clientKey = req.headers.get("x-client-composio-key") || undefined;
+    const apiKey = clientKey || process.env.COMPOSIO_API_KEY;
     if (!apiKey) {
       return new Response(
         JSON.stringify({ error: "COMPOSIO_API_KEY not configured" }),

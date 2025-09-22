@@ -1,6 +1,7 @@
 import React from "react";
 import { Toolkit, Tool } from "../../types/chat";
 import { Modal } from "./Modal";
+import { useApiKeys } from "@/app/hooks/useApiKeys";
 
 interface ToolsModalProps {
   isOpen: boolean;
@@ -21,11 +22,16 @@ function ToolsModalContent({
   const [expandedToolkit, setExpandedToolkit] = React.useState<string | null>(
     null,
   );
+  const { apiKeys } = useApiKeys();
 
   React.useEffect(() => {
     async function fetchToolkits() {
       try {
-        const response = await fetch("/api/toolkits");
+        const response = await fetch("/api/toolkits", {
+          headers: apiKeys.composio
+            ? { "x-client-composio-key": apiKeys.composio }
+            : {},
+        });
         const data = await response.json();
         setToolkits(data.items || []);
       } catch (error) {
@@ -53,7 +59,11 @@ function ToolsModalContent({
     if (!toolkit.tools) {
       // Fetch tools for this toolkit
       try {
-        const response = await fetch(`/api/toolkits/${toolkit.slug}/tools`);
+        const response = await fetch(`/api/toolkits/${toolkit.slug}/tools`, {
+          headers: apiKeys.composio
+            ? { "x-client-composio-key": apiKeys.composio }
+            : {},
+        });
         const data = await response.json();
         toolkit.tools = data.items || [];
         setToolkits([...toolkits]); // Trigger re-render

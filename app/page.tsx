@@ -15,6 +15,8 @@ import { IconClose } from "./components/ui/icons/IconClose";
 import { useChat } from "./hooks/useChat";
 import { useAttachments } from "./hooks/useAttachments";
 import { useTools } from "./hooks/useTools";
+import { useApiKeys } from "./hooks/useApiKeys";
+import { ApiKeysModal } from "./components/modals/ApiKeysModal";
 
 export default function Home() {
   const {
@@ -82,6 +84,12 @@ export default function Home() {
     {},
   );
   const contextMenuRef = React.useRef<HTMLDivElement | null>(null);
+  // BYOK modal state and keys
+  const [isKeysModalOpen, setIsKeysModalOpen] = React.useState(false);
+  const { apiKeys, hasAnyKey } = useApiKeys();
+  const keysCount = React.useMemo(() => {
+    return Object.values(apiKeys || {}).filter((v) => !!(v && v.length)).length;
+  }, [apiKeys]);
 
   const toggleContextMenu = () => setIsContextMenuOpen((v) => !v);
 
@@ -243,6 +251,8 @@ export default function Home() {
 
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
+
+    setInput("");
 
     const attachmentsPayload = await preparePayload(attachments);
     // Merge in selected external contexts as virtual attachments
@@ -443,8 +453,28 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Context attach menu - top right */}
-      <div className="fixed right-3 top-3 z-50">
+      {/* Top-right controls: Keys + Contexts */}
+      <div className="fixed right-3 top-3 z-50 flex items-center gap-2">
+        {/* Manage API Keys */}
+        <div className="relative">
+          <button
+            aria-label="Manage API Keys"
+            onClick={() => setIsKeysModalOpen(true)}
+            className="px-3 h-9 rounded-lg bg-[#dbeafe] text-[#1e3a8a] shadow-sm hover:brightness-95 text-xs font-medium"
+            title="Bring Your Own Keys (BYOK)"
+          >
+            {hasAnyKey ? "Keys ✓" : "Keys"}
+          </button>
+          {keysCount > 0 && (
+            <span
+              className="absolute -top-1 -right-1 grid h-4 min-w-[1rem] place-items-center rounded-full bg-[#10b981] px-1 text-[8px] font-semibold text-white border border-white shadow"
+              title={`${keysCount} key${keysCount === 1 ? "" : "s"} set`}
+            >
+              {keysCount}
+            </span>
+          )}
+        </div>
+        {/* Context attach menu */}
         <div className="relative" ref={contextMenuRef}>
           <button
             aria-label="Attach framework contexts"
@@ -596,6 +626,9 @@ export default function Home() {
         fileName={previewName}
         content={previewContent}
       />
+
+      {/* API Keys Modal */}
+      <ApiKeysModal isOpen={isKeysModalOpen} onClose={() => setIsKeysModalOpen(false)} />
 
       {/* Thread Token Counter - bottom right */}
       {activeThread && activeThread.messages.length > 0 && totalThreadTokens > 0 && (

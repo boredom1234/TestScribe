@@ -1,4 +1,5 @@
 import React from "react";
+import { useApiKeys } from "@/app/hooks/useApiKeys";
 import { ModelSelector } from "./ModelSelector";
 import { AttachmentManager } from "./AttachmentManager";
 import { IconArrowUp, IconTools } from "../ui/icons";
@@ -37,6 +38,7 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
   ) {
     const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
     const [isFormatting, setIsFormatting] = React.useState(false);
+    const { apiKeys } = useApiKeys();
 
     // Auto-resize textarea up to a max height, then enable vertical scrolling
     const MAX_TEXTAREA_HEIGHT = 240; // px
@@ -79,7 +81,7 @@ export const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
         const res = await fetch("/api/format", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ text: input, model: selectedModel, prePrompt }),
+          body: JSON.stringify({ text: input, model: selectedModel, prePrompt, keys: apiKeys }),
         });
         const data = await res.json().catch(() => ({ text: "" }));
         const newText = typeof data?.text === "string" ? data.text : "";

@@ -1,6 +1,7 @@
 import React from "react";
 import { ChatMessage, Thread, FrameworkContextKey } from "../types/chat";
 import { useLocalStorage } from "./useLocalStorage";
+import { useApiKeys } from "./useApiKeys";
 
 export function useChat() {
   const STORAGE_THREADS = "testscribe:threads";
@@ -31,6 +32,9 @@ export function useChat() {
   const [firstTokenTime, setFirstTokenTime] = React.useState<number | null>(
     null,
   );
+
+  // Bring in BYOK from localStorage
+  const { apiKeys } = useApiKeys();
 
   // Create default thread after hydration if none exists
   React.useEffect(() => {
@@ -144,6 +148,7 @@ export function useChat() {
           attachments: attachmentsPayload,
           messages: [...targetMessages, userMsg],
           tools: selectedTools,
+          keys: apiKeys,
         }),
       });
 
@@ -403,6 +408,7 @@ export function useChat() {
           attachments: attachmentsPayload,
           messages: [...targetMessages, editedUserMsg],
           tools: selectedTools,
+          keys: apiKeys,
         }),
       });
 

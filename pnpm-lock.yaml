@@ -15,7 +15,7 @@ importers:
         specifier: ^2.0.6
         version: 2.0.11(zod@3.25.76)
       '@ai-sdk/groq':
-        specifier: ^2.0.8
+        specifier: ^2.0.16
         version: 2.0.16(zod@3.25.76)
       '@ai-sdk/openai':
         specifier: ^2.0.12
