@@ -22,25 +22,31 @@ function ToolsModalContent({
   const [expandedToolkit, setExpandedToolkit] = React.useState<string | null>(
     null,
   );
-  const { apiKeys } = useApiKeys();
+  const { apiKeys, hydrated } = useApiKeys();
 
   React.useEffect(() => {
+    if (!hydrated) return; // wait for localStorage to hydrate so BYOK keys are available
+    let cancelled = false;
     async function fetchToolkits() {
       try {
+        setLoading(true);
         const response = await fetch("/api/toolkits", {
           headers: apiKeys.composio
             ? { "x-client-composio-key": apiKeys.composio }
             : {},
         });
         const data = await response.json();
-        setToolkits(data.items || []);
+        if (!cancelled) setToolkits(data.items || []);
       } catch (error) {
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchToolkits();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, apiKeys.composio]);
 
   const toggleTool = (toolSlug: string) => {
     if (selectedTools.includes(toolSlug)) {
