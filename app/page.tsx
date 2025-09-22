@@ -567,7 +567,7 @@ export default function Home() {
           "mx-auto flex gap-6 p-4 sm:p-6 lg:py-8 justify-center transition-all duration-300"
         }
       >
-        <div className="w-full space-y-6 px-2 pt-8 duration-300 animate-in fade-in-50 zoom-in-90 sm:px-8 pt-18">
+        <div className="w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl mx-auto space-y-6 px-2 pt-8 duration-300 animate-in fade-in-50 zoom-in-90 sm:px-8 pt-18">
           {/* Welcome Screen */}
           {showWelcome && (
             <WelcomeScreen

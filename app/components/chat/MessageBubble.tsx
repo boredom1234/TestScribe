@@ -456,7 +456,7 @@ export function MessageBubble({
                           lang === "plaintext"
                         ) {
                           return (
-                            <span className="inline-flex items-center rounded-[5px] bg-blue-50 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap">
+                            <span className="inline-flex flex-wrap items-center rounded-[5px] bg-blue-50 px-2.5 py-0.5 text-xs font-semibold whitespace-normal break-words max-w-[320px]">
                               {content}
                             </span>
                           );

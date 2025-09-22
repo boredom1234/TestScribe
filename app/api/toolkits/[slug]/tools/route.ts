@@ -7,6 +7,10 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+    const { searchParams } = new URL(req.url);
+    const limit = searchParams.get("limit") || "1000";
+    const search = searchParams.get("search") || undefined;
+    const cursor = searchParams.get("cursor") || undefined;
 
     const clientKey = req.headers.get("x-client-composio-key") || undefined;
     const apiKey = clientKey || process.env.COMPOSIO_API_KEY;
@@ -22,6 +26,9 @@ export async function GET(
 
     const url = new URL("https://backend.composio.dev/api/v3/tools");
     url.searchParams.append("toolkit_slug", slug);
+    if (limit) url.searchParams.append("limit", limit);
+    if (search) url.searchParams.append("search", search);
+    if (cursor) url.searchParams.append("cursor", cursor);
 
     const response = await fetch(url.toString(), {
       headers: {

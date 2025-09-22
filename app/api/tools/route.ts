@@ -4,8 +4,14 @@
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const category = searchParams.get("category");
-    const limit = searchParams.get("limit") || "1000";
+
+    const search = searchParams.get("search") || undefined;
+    const toolkit_slug = searchParams.get("toolkit_slug") || undefined;
+    const tags = searchParams.get("tags") || undefined;
+    const important = searchParams.get("important") || undefined;
+    const tool_slugs = searchParams.get("tool_slugs") || undefined;
+    const limit = searchParams.get("limit") || "50";
+    const cursor = searchParams.get("cursor") || undefined;
 
     const clientKey = req.headers.get("x-client-composio-key") || undefined;
     const apiKey = clientKey || process.env.COMPOSIO_API_KEY;
@@ -19,10 +25,15 @@ export async function GET(req: Request) {
       );
     }
 
-    const url = new URL("https://backend.composio.dev/api/v3/toolkits");
-    if (category) url.searchParams.append("category", category);
-    url.searchParams.append("limit", limit);
-    url.searchParams.append("sort_by", "usage");
+    const url = new URL("https://backend.composio.dev/api/v3/tools");
+    // Forward supported filters to Composio
+    if (search) url.searchParams.append("search", search);
+    if (toolkit_slug) url.searchParams.append("toolkit_slug", toolkit_slug);
+    if (tags) url.searchParams.append("tags", tags);
+    if (important) url.searchParams.append("important", important);
+    if (tool_slugs) url.searchParams.append("tool_slugs", tool_slugs);
+    if (cursor) url.searchParams.append("cursor", cursor);
+    if (limit) url.searchParams.append("limit", limit);
 
     const response = await fetch(url.toString(), {
       headers: {
@@ -34,7 +45,7 @@ export async function GET(req: Request) {
     if (!response.ok) {
       await response.text().catch(() => "Unknown error");
       return new Response(
-        JSON.stringify({ error: "Failed to fetch toolkits" }),
+        JSON.stringify({ error: "Failed to fetch tools" }),
         {
           status: response.status,
           headers: { "content-type": "application/json" },

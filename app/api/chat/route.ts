@@ -288,8 +288,10 @@ export async function POST(req: Request) {
     try {
       const model = resolveModel(selectedModel, keys);
 
-      let composioTools = {};
+      let composioTools: Record<string, any> = {};
       let allTools: Record<string, any> = {};
+      // Use a loose type here due to provider generic differences across versions
+      let composioClient: any = null;
 
       // Initialize Composio tools if any are selected
       if (
@@ -298,15 +300,12 @@ export async function POST(req: Request) {
         (keys?.composio || process.env.COMPOSIO_API_KEY)
       ) {
         try {
-          const composio = new Composio({
+          composioClient = new Composio({
             apiKey: keys?.composio || process.env.COMPOSIO_API_KEY || "",
             provider: new VercelProvider(),
           });
-          // Get tools from Composio - assuming we have a default user ID
-          const userId = "default"; // In production, this should be the actual user ID
-
-          // Get tools by their slugs - pass as ToolListParams object
-          composioTools = await composio.tools.get(userId, {
+          const userId = "default"; // TODO: replace with real user ID in production
+          composioTools = await composioClient.tools.get(userId, {
             tools: selectedTools,
           });
         } catch (toolError) {}
@@ -394,18 +393,32 @@ export async function POST(req: Request) {
         streamTextOptions.tools = allTools;
         streamTextOptions.maxToolRoundtrips = 3;
         streamTextOptions.toolChoice = "auto"; // Allow model to choose when to use tools
+        // Ensure Composio tool calls are actually executed
+        if (composioClient) {
+          (streamTextOptions as any).callbacks = {
+            onToolCall: async (tool: any) => {
+              try {
+                const result = await (composioClient as any).provider.executeToolCall(tool);
+                return result;
+              } catch (err) {
+                return `Tool execution failed: ${err instanceof Error ? err.message : String(err)}`;
+              }
+            },
+          };
+        }
       }
 
       const result = streamText(streamTextOptions);
 
       // For tool-enabled requests, we need a two-step process
-      if (Object.keys(composioTools).length > 0) {
+      if (Object.keys(allTools).length > 0) {
         // Create a custom readable stream that handles tool execution then AI response
         const stream = new ReadableStream({
           async start(controller) {
             const encoder = new TextEncoder();
             let toolResults: any[] = [];
             let toolCalls: any[] = [];
+            let firstPassText = "";
 
             try {
               // STEP 1: Execute tools
@@ -439,6 +452,11 @@ export async function POST(req: Request) {
                     toolResultData
                   )}__TOOL_RESULT__\n\n`;
                   controller.enqueue(encoder.encode(toolResultJson));
+                } else if (
+                  part.type === "text-delta"
+                ) {
+                  // Accumulate first-pass text so we can fall back to it if no tools were used
+                  firstPassText += (part.text as string) || "";
                 }
               }
 
@@ -476,6 +494,9 @@ export async function POST(req: Request) {
                 for await (const part of responseResult.textStream) {
                   controller.enqueue(encoder.encode(part));
                 }
+              } else if (firstPassText && firstPassText.trim().length > 0) {
+                // No tools were used; stream the first-pass model text so the UI isn't empty
+                controller.enqueue(encoder.encode(firstPassText));
               }
             } catch (error) {
               const errorMsg = `\n\nError: ${
