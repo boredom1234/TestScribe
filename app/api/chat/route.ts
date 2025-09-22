@@ -20,7 +20,7 @@ interface Message {
 
 function streamFromString(
   text: string,
-  delayMs = 10,
+  delayMs = 10
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   return new ReadableStream<Uint8Array>({
@@ -91,10 +91,14 @@ function resolveModel(selected?: string, keys?: BYOK) {
     // Requested list
     "claude-opus-4-20250514": () => anthropicProv("claude-opus-4-20250514"),
     "claude-sonnet-4-20250514": () => anthropicProv("claude-sonnet-4-20250514"),
-    "claude-3-7-sonnet-20250219": () => anthropicProv("claude-3-7-sonnet-20250219"),
-    "claude-3-5-sonnet-20241022": () => anthropicProv("claude-3-5-sonnet-20241022"),
-    "claude-3-5-sonnet-20240620": () => anthropicProv("claude-3-5-sonnet-20240620"),
-    "claude-3-5-haiku-20241022": () => anthropicProv("claude-3-5-haiku-20241022"),
+    "claude-3-7-sonnet-20250219": () =>
+      anthropicProv("claude-3-7-sonnet-20250219"),
+    "claude-3-5-sonnet-20241022": () =>
+      anthropicProv("claude-3-5-sonnet-20241022"),
+    "claude-3-5-sonnet-20240620": () =>
+      anthropicProv("claude-3-5-sonnet-20240620"),
+    "claude-3-5-haiku-20241022": () =>
+      anthropicProv("claude-3-5-haiku-20241022"),
     "claude-3-opus-20240229": () => anthropicProv("claude-3-opus-20240229"),
     "claude-3-sonnet-20240229": () => anthropicProv("claude-3-sonnet-20240229"),
     "claude-3-haiku-20240307": () => anthropicProv("claude-3-haiku-20240307"),
@@ -109,14 +113,16 @@ function resolveModel(selected?: string, keys?: BYOK) {
     "gemini-2.5-pro": () => googleProv("gemini-2.5-pro"),
     "gemini-2.5-flash": () => googleProv("gemini-2.5-flash"),
     "gemini-2.5-flash-lite": () => googleProv("gemini-2.5-flash-lite"),
-    "gemini-2.5-flash-lite-preview-06-17": () => googleProv("gemini-2.5-flash-lite-preview-06-17"),
+    "gemini-2.5-flash-lite-preview-06-17": () =>
+      googleProv("gemini-2.5-flash-lite-preview-06-17"),
     "gemini-2.0-flash": () => googleProv("gemini-2.0-flash"),
     "gemini-1.5-pro": () => googleProv("gemini-1.5-pro"),
     "gemini-1.5-pro-latest": () => googleProv("gemini-1.5-pro-latest"),
     "gemini-1.5-flash": () => googleProv("gemini-1.5-flash"),
     "gemini-1.5-flash-latest": () => googleProv("gemini-1.5-flash-latest"),
     "gemini-1.5-flash-8b": () => googleProv("gemini-1.5-flash-8b"),
-    "gemini-1.5-flash-8b-latest": () => googleProv("gemini-1.5-flash-8b-latest"),
+    "gemini-1.5-flash-8b-latest": () =>
+      googleProv("gemini-1.5-flash-8b-latest"),
 
     // Groq models
     // Reasoning-capable
@@ -134,12 +140,17 @@ function resolveModel(selected?: string, keys?: BYOK) {
     "Mixtral 8x7B 32k": () => groqProv("mixtral-8x7b-32768"),
     "Moonshot Kimi K2": () => groqProv("moonshotai/kimi-k2-instruct"),
     // Multi-modal / safety
-    "Llama 4 Scout 17B": () => groqProv("meta-llama/llama-4-scout-17b-16e-instruct"),
-    "Llama 4 Maverick 17B": () => groqProv("meta-llama/llama-4-maverick-17b-128e-instruct"),
+    "Llama 4 Scout 17B": () =>
+      groqProv("meta-llama/llama-4-scout-17b-16e-instruct"),
+    "Llama 4 Maverick 17B": () =>
+      groqProv("meta-llama/llama-4-maverick-17b-128e-instruct"),
     "Llama Guard 3 8B": () => groqProv("llama-guard-3-8b"),
-    "meta-llama/llama-guard-4-12b": () => groqProv("meta-llama/llama-guard-4-12b"),
-    "meta-llama/llama-prompt-guard-2-22m": () => groqProv("meta-llama/llama-prompt-guard-2-22m"),
-    "meta-llama/llama-prompt-guard-2-86m": () => groqProv("meta-llama/llama-prompt-guard-2-86m"),
+    "meta-llama/llama-guard-4-12b": () =>
+      groqProv("meta-llama/llama-guard-4-12b"),
+    "meta-llama/llama-prompt-guard-2-22m": () =>
+      groqProv("meta-llama/llama-prompt-guard-2-22m"),
+    "meta-llama/llama-prompt-guard-2-86m": () =>
+      groqProv("meta-llama/llama-prompt-guard-2-86m"),
     // OSS models with Browser Search support
     "OpenAI GPT-OSS 20B (Groq)": () => groqProv("openai/gpt-oss-20b"),
     "OpenAI GPT-OSS 120B (Groq)": () => groqProv("openai/gpt-oss-120b"),
@@ -147,17 +158,22 @@ function resolveModel(selected?: string, keys?: BYOK) {
     "gemma2-9b-it": () => groqProv("gemma2-9b-it"),
     "llama-3.1-8b-instant": () => groqProv("llama-3.1-8b-instant"),
     "llama-3.3-70b-versatile": () => groqProv("llama-3.3-70b-versatile"),
-    "deepseek-r1-distill-llama-70b": () => groqProv("deepseek-r1-distill-llama-70b"),
-    "meta-llama/llama-4-maverick-17b-128e-instruct": () => groqProv("meta-llama/llama-4-maverick-17b-128e-instruct"),
-    "meta-llama/llama-4-scout-17b-16e-instruct": () => groqProv("meta-llama/llama-4-scout-17b-16e-instruct"),
-    "moonshotai/kimi-k2-instruct": () => groqProv("moonshotai/kimi-k2-instruct"),
+    "deepseek-r1-distill-llama-70b": () =>
+      groqProv("deepseek-r1-distill-llama-70b"),
+    "meta-llama/llama-4-maverick-17b-128e-instruct": () =>
+      groqProv("meta-llama/llama-4-maverick-17b-128e-instruct"),
+    "meta-llama/llama-4-scout-17b-16e-instruct": () =>
+      groqProv("meta-llama/llama-4-scout-17b-16e-instruct"),
+    "moonshotai/kimi-k2-instruct": () =>
+      groqProv("moonshotai/kimi-k2-instruct"),
     "qwen/qwen3-32b": () => groqProv("qwen/qwen3-32b"),
     "llama-guard-3-8b": () => groqProv("llama-guard-3-8b"),
     "llama3-70b-8192": () => groqProv("llama3-70b-8192"),
     "llama3-8b-8192": () => groqProv("llama3-8b-8192"),
     "mixtral-8x7b-32768": () => groqProv("mixtral-8x7b-32768"),
     "qwen-qwq-32b": () => groqProv("qwen-qwq-32b"),
-    "deepseek-r1-distill-qwen-32b": () => groqProv("deepseek-r1-distill-qwen-32b"),
+    "deepseek-r1-distill-qwen-32b": () =>
+      groqProv("deepseek-r1-distill-qwen-32b"),
     "openai/gpt-oss-20b": () => groqProv("openai/gpt-oss-20b"),
     "openai/gpt-oss-120b": () => groqProv("openai/gpt-oss-120b"),
   };
@@ -194,7 +210,7 @@ export async function POST(req: Request) {
     const nowISO = new Date().toISOString();
     const baseSystemPrompt = assistantPrompt.replace(
       /\{\{currentDateTime\}\}/g,
-      nowISO,
+      nowISO
     );
 
     const msgs: Message[] =
@@ -211,7 +227,7 @@ export async function POST(req: Request) {
         (a) =>
           a.domInspExtractData &&
           typeof a.content === "string" &&
-          a.content.length > 0,
+          a.content.length > 0
       );
       if (domJsons.length > 0) {
         // Check if DOM attachment data is already in the conversation history
@@ -219,14 +235,14 @@ export async function POST(req: Request) {
           (msg) =>
             msg.role === "user" &&
             msg.content &&
-            msg.content.includes("--- ATTACHED DOM EXTRACTION DATA ---"),
+            msg.content.includes("--- ATTACHED DOM EXTRACTION DATA ---")
         );
 
         if (!hasExistingAttachment) {
           const combined = domJsons
             .map(
               (a) =>
-                `Attachment: ${a.name}\n\n\x60\x60\x60json\n${a.content}\n\x60\x60\x60`,
+                `Attachment: ${a.name}\n\n\`\`\`json\n${a.content}\n\`\`\``
             )
             .join("\n\n");
 
@@ -244,20 +260,20 @@ export async function POST(req: Request) {
         (a) =>
           a.externalContext &&
           typeof a.content === "string" &&
-          a.content.length > 0,
+          a.content.length > 0
       );
       if (externalContexts.length > 0) {
         const hasExistingExternal = msgsWithAttachment.some(
           (msg) =>
             msg.role === "user" &&
             msg.content &&
-            msg.content.includes("--- ATTACHED EXTERNAL CONTEXT ---"),
+            msg.content.includes("--- ATTACHED EXTERNAL CONTEXT ---")
         );
         if (!hasExistingExternal) {
           const combinedExt = externalContexts
             .map(
               (a) =>
-                `Attachment: ${a.name}\n\n\x60\x60\x60\n${a.content}\n\x60\x60\x60`,
+                `Attachment: ${a.name}\n\n\`\`\`\n${a.content}\n\`\`\``
             )
             .join("\n\n");
           const externalMessage: Message = {
@@ -283,13 +299,13 @@ export async function POST(req: Request) {
       ) {
         try {
           const composio = new Composio({
-            apiKey: keys?.composio || (process.env.COMPOSIO_API_KEY as string),
+            apiKey: keys?.composio || process.env.COMPOSIO_API_KEY || "",
             provider: new VercelProvider(),
           });
           // Get tools from Composio - assuming we have a default user ID
           const userId = "default"; // In production, this should be the actual user ID
 
-          // Get tools by their slugs - pass as array to tools.get
+          // Get tools by their slugs - pass as ToolListParams object
           composioTools = await composio.tools.get(userId, {
             tools: selectedTools,
           });
@@ -363,7 +379,10 @@ export async function POST(req: Request) {
         selectedName === "OpenAI GPT-OSS 20B (Groq)" ||
         selectedName === "OpenAI GPT-OSS 120B (Groq)";
       if (wantsBrowserSearch && browserSupported) {
-        allTools = { ...allTools, browser_search: groq.tools.browserSearch({}) };
+        allTools = {
+          ...allTools,
+          browser_search: groq.tools.browserSearch({}),
+        };
       }
 
       // Only add tools if we have any
@@ -402,7 +421,9 @@ export async function POST(req: Request) {
                   toolCalls.push(toolCallData);
 
                   // Send tool call to frontend
-                  const toolCallJson = `\n\n__TOOL_CALL__${JSON.stringify(toolCallData)}__TOOL_CALL__\n\n`;
+                  const toolCallJson = `\n\n__TOOL_CALL__${JSON.stringify(
+                    toolCallData
+                  )}__TOOL_CALL__\n\n`;
                   controller.enqueue(encoder.encode(toolCallJson));
                 } else if (part.type === "tool-result") {
                   const toolResultData = {
@@ -414,7 +435,9 @@ export async function POST(req: Request) {
                   toolResults.push(toolResultData);
 
                   // Send tool result to frontend
-                  const toolResultJson = `\n\n__TOOL_RESULT__${JSON.stringify(toolResultData)}__TOOL_RESULT__\n\n`;
+                  const toolResultJson = `\n\n__TOOL_RESULT__${JSON.stringify(
+                    toolResultData
+                  )}__TOOL_RESULT__\n\n`;
                   controller.enqueue(encoder.encode(toolResultJson));
                 }
               }
@@ -429,7 +452,16 @@ export async function POST(req: Request) {
                   })),
                   {
                     role: "user" as const,
-                    content: `Based on the following tool results, please provide a helpful response:\n\n${toolResults.map((tr) => `Tool: ${tr.toolName}\nResult: ${JSON.stringify(tr.result, null, 2)}`).join("\n\n")}`,
+                    content: `Based on the following tool results, please provide a helpful response:\n\n${toolResults
+                      .map(
+                        (tr) =>
+                          `Tool: ${tr.toolName}\nResult: ${JSON.stringify(
+                            tr.result,
+                            null,
+                            2
+                          )}`
+                      )
+                      .join("\n\n")}`,
                   },
                 ];
 
@@ -446,7 +478,9 @@ export async function POST(req: Request) {
                 }
               }
             } catch (error) {
-              const errorMsg = `\n\nError: ${error instanceof Error ? error.message : "Unknown error"}`;
+              const errorMsg = `\n\nError: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`;
               controller.enqueue(encoder.encode(errorMsg));
             } finally {
               controller.close();
