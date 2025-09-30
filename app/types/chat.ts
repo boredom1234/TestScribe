@@ -29,6 +29,7 @@ export type Thread = {
   isBranched?: boolean;
   parentId?: string; // original thread id when branched
   attachedContexts?: FrameworkContextKey[];
+  useHistoryContext?: boolean; // if true, use all messages; if false, only first + current
 };
 
 export type Category = "create" | "explore" | "code" | "learn";

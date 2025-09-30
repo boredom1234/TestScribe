@@ -39,6 +39,7 @@ export default function Home() {
     totalThreadTokens,
     markContextsAttached,
     isContextAttached,
+    toggleHistoryContext,
   } = useChat();
 
   const {
@@ -453,8 +454,30 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Top-right controls: Keys + Contexts */}
+      {/* Top-right controls: History Context + Keys + Contexts */}
       <div className="fixed right-3 top-3 z-50 flex items-center gap-2">
+        {/* History Context Toggle */}
+        <button
+          aria-label="Toggle chat history context"
+          onClick={toggleHistoryContext}
+          className={`px-3 h-9 rounded-lg shadow-sm hover:brightness-95 text-xs font-medium transition-all duration-200 ${
+            activeThread?.useHistoryContext ?? true
+              ? "bg-emerald-500 text-white border border-emerald-600"
+              : "bg-gray-300 text-gray-700 border border-gray-400"
+          }`}
+          title={
+            activeThread?.useHistoryContext ?? true
+              ? "History Context: ON - All messages are used as context"
+              : "History Context: OFF - Only first user message + current message are used as context"
+          }
+        >
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold">History</span>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/20">
+              {activeThread?.useHistoryContext ?? true ? "ON" : "OFF"}
+            </span>
+          </div>
+        </button>
         {/* Manage API Keys */}
         <div className="relative">
           <button

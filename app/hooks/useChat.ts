@@ -44,6 +44,7 @@ export function useChat() {
         title: "New Chat",
         messages: [],
         attachedContexts: [],
+        useHistoryContext: true, // default to ON
       };
       // editUserMessage moved out of useEffect and defined at hook scope
       setThreads([defaultThread]);
@@ -108,6 +109,15 @@ export function useChat() {
       targetMessages = activeThread.messages;
     }
 
+    // Apply history context logic: if useHistoryContext is false, only send first user message
+    const useHistory = activeThread.useHistoryContext ?? true;
+    let messagesToSend = targetMessages;
+    if (!useHistory && targetMessages.length > 0) {
+      // Keep only the first USER message (if it exists) as context
+      const firstUserMessage = targetMessages.find((m) => m.role === "user");
+      messagesToSend = firstUserMessage ? [firstUserMessage] : [];
+    }
+
     const userMsg: ChatMessage = {
       id: crypto.randomUUID(),
       role: "user",
@@ -146,7 +156,7 @@ export function useChat() {
         body: JSON.stringify({
           model: selectedModel,
           attachments: attachmentsPayload,
-          messages: [...targetMessages, userMsg],
+          messages: [...messagesToSend, userMsg],
           tools: selectedTools,
           keys: apiKeys,
         }),
@@ -374,6 +384,15 @@ export function useChat() {
     // Truncate history BEFORE the original user message, then append the edited user message
     const targetMessages = activeThread.messages.slice(0, idx);
 
+    // Apply history context logic
+    const useHistory = activeThread.useHistoryContext ?? true;
+    let messagesToSend = targetMessages;
+    if (!useHistory && targetMessages.length > 0) {
+      // Keep only the first USER message (if it exists) as context
+      const firstUserMessage = targetMessages.find((m) => m.role === "user");
+      messagesToSend = firstUserMessage ? [firstUserMessage] : [];
+    }
+
     const editedUserMsg: ChatMessage = {
       id: crypto.randomUUID(),
       role: "user",
@@ -406,7 +425,7 @@ export function useChat() {
         body: JSON.stringify({
           model: selectedModel,
           attachments: attachmentsPayload,
-          messages: [...targetMessages, editedUserMsg],
+          messages: [...messagesToSend, editedUserMsg],
           tools: selectedTools,
           keys: apiKeys,
         }),
@@ -597,7 +616,13 @@ export function useChat() {
 
   const startNewChat = () => {
     const id = crypto.randomUUID();
-    const newThread: Thread = { id, title: "New Chat", messages: [], attachedContexts: [] };
+    const newThread: Thread = { 
+      id, 
+      title: "New Chat", 
+      messages: [], 
+      attachedContexts: [],
+      useHistoryContext: true, // default to ON
+    };
     setThreads((prev) => [newThread, ...prev]);
     setActiveThreadId(id);
   };
@@ -614,6 +639,7 @@ export function useChat() {
           title: "New Chat",
           messages: [],
           attachedContexts: [],
+          useHistoryContext: true, // default to ON
         };
         setActiveThreadId(newId);
         return [newThread];
@@ -646,6 +672,7 @@ export function useChat() {
       isBranched: true,
       parentId: activeThread.id,
       attachedContexts: activeThread.attachedContexts ? [...activeThread.attachedContexts] : [],
+      useHistoryContext: activeThread.useHistoryContext ?? true, // inherit from parent
     };
 
     setThreads((prev) => [newThread, ...prev]);
@@ -692,6 +719,15 @@ export function useChat() {
     }
   };
 
+  const toggleHistoryContext = () => {
+    setThreads((prev) =>
+      prev.map((t) => {
+        if (t.id !== activeThread.id) return t;
+        return { ...t, useHistoryContext: !(t.useHistoryContext ?? true) };
+      }),
+    );
+  };
+
   return {
     threads,
     activeThread,
@@ -712,5 +748,6 @@ export function useChat() {
     totalThreadTokens,
     markContextsAttached,
     isContextAttached,
+    toggleHistoryContext,
   };
 }
